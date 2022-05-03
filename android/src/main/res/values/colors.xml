@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+ <color name="primary_dark">#000000</color>
+  <color name="colorAccent">#55237C</color>
+  <color name="background">#141C2E</color>
+  <color name="notification_action_accept">#FF2525</color>
+  <color name="notification_action_decline">#FF2525</color>
+</resources>
