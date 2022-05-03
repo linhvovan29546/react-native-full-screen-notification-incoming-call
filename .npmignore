@@ -1,5 +1,5 @@
-# Dependency directory
-node_modules
-
-# Examples (If applicable to your project)
-examples
+example/
+node_modules/
+.idea/
+.github/
+docs/
