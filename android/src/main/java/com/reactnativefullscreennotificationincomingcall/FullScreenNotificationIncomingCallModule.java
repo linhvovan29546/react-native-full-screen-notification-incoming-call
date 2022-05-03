@@ -10,9 +10,12 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+
+import java.util.HashMap;
 
 @ReactModule(name = FullScreenNotificationIncomingCallModule.NAME)
 public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJavaModule {
@@ -31,18 +34,23 @@ public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJa
     }
 
     @ReactMethod
-    public void displayNotification(String uuid, String name,@Nullable String avatar, String info,String channelId,String channelName, int timeout) {
+    public void displayNotification(String uuid, @Nullable String avatar,@Nullable int timeout, ReadableMap foregroundOptions) {
       Log.d(TAG, "displayNotification ui"  );
+      if(foregroundOptions == null){
+        Log.d(TAG, "foregroundOptions can't null"  );
+        return;
+      }
       Intent intent = new Intent(getReactApplicationContext(), IncomingCallService.class);
       intent.putExtra("uuid", uuid);
-      intent.putExtra("name",name );
-      if(avatar!=null){
+      intent.putExtra("name",foregroundOptions.getString("notificationTitle") );
       intent.putExtra("avatar", avatar);
-      }
-      intent.putExtra("info", info);
-      intent.putExtra("channelId", channelId);
-      intent.putExtra("channelName", channelName);
+      intent.putExtra("info", foregroundOptions.getString("notificationBody"));
+      intent.putExtra("channelId", foregroundOptions.getString("channelId"));
+      intent.putExtra("channelName", foregroundOptions.getString("channelName"));
       intent.putExtra("timeout", timeout);
+      intent.putExtra("icon",foregroundOptions.getString("notificationIcon"));
+      intent.putExtra("answerText",foregroundOptions.getString("answerText"));
+      intent.putExtra("declineText",foregroundOptions.getString("declineText"));
       intent.setAction(Constants.ACTION_SHOW_INCOMING_CALL);
       getReactApplicationContext().startService(intent);
     }

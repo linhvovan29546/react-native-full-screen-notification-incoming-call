@@ -14,9 +14,9 @@ class RNNotificationCall {
   constructor() {
     this._notificationEventHandlers = new Map();
   }
-  displayNotification = (uuid: string, name: string, avatar: string | null, info: string, channelId: string, channelName: string, timeout: number) => {
-    console.log('displayNotification')
-    RNNotificationIncomingCall.displayNotification(uuid, name, avatar, info, channelId, channelName, timeout)
+  displayNotification = (uuid: string, avatar: string | null, timeout: number | null, foregroundOptions: any) => {
+
+    RNNotificationIncomingCall.displayNotification(uuid, avatar, timeout ? timeout : 0, foregroundOptions)
   }
   hideNotification = () => {
     RNNotificationIncomingCall.hideNotification()

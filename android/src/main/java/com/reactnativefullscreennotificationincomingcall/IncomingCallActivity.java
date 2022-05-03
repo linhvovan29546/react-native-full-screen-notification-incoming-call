@@ -22,6 +22,8 @@ public class IncomingCallActivity extends AppCompatActivity {
   private static final String TAG = "MessagingService";
   private TextView tvName;
   private TextView tvInfo;
+  private TextView tvDecline;
+  private TextView tvAccept;
   private ImageView ivAvatar;
   private String uuid = "";
   static boolean active = false;
@@ -54,7 +56,6 @@ public class IncomingCallActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Log.d(TAG, "1111111111111"  );
     fa = this;
     setContentView(R.layout.activity_call_incoming);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -70,7 +71,8 @@ public class IncomingCallActivity extends AppCompatActivity {
     tvName = findViewById(R.id.tvName);
     tvInfo = findViewById(R.id.tvInfo);
     ivAvatar = findViewById(R.id.ivAvatar);
-
+    tvDecline=findViewById(R.id.tvDecline);
+    tvAccept=findViewById(R.id.tvAccept);
     Bundle bundle = getIntent().getExtras();
     if (bundle != null) {
       if (bundle.containsKey("uuid")) {
@@ -91,11 +93,15 @@ public class IncomingCallActivity extends AppCompatActivity {
           Picasso.get().load(avatar).transform(new CircleTransform()).into(ivAvatar);
         }
       }
+      if(bundle.containsKey("declineText")){
+        String declineText = bundle.getString("declineText");
+        tvDecline.setText(declineText);
+      }
+      if(bundle.containsKey("answerText")){
+        String answerText = bundle.getString("answerText");
+        tvAccept.setText(answerText);
+      }
     }
-
-    getWindow().addFlags( WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-      | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-
 
     LottieAnimationView acceptCallBtn = findViewById(R.id.ivAcceptCall);
     acceptCallBtn.setOnClickListener(new View.OnClickListener() {
