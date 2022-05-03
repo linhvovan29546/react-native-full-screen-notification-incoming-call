@@ -27,6 +27,7 @@ export default function App() {
         notificationBody: "Incoming video call",
         answerText: "Answer",
         declineText: "Decline",
+        notificationColor: 'colorAccent'//path color in android
       }
     )
   }
