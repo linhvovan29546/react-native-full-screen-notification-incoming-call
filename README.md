@@ -123,7 +123,6 @@ import RNNotificationCall from "react-native-full-screen-notification-incoming-c
     - `answerText`: string (required) answer button label
     - `declineText`: string (required) decline button label
     - `notificationColor`: string (optinal) color of notification 
-       <color name="colorAccent">#000000</color>
 
 #### hide notification
 
