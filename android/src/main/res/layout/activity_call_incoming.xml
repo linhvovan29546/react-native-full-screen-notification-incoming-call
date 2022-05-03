@@ -4,7 +4,6 @@
   android:background="@drawable/splash_screen_background"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  style="@style/inComingCall"
   android:orientation="vertical">
 
   <LinearLayout

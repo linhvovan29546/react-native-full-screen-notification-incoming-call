@@ -1,22 +1,58 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeEventEmitter, NativeModules } from 'react-native';
 
-const LINKING_ERROR =
-  `The package 'react-native-full-screen-notification-incoming-call' doesn't seem to be linked. Make sure: \n\n` +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo managed workflow\n';
+const RNNotificationIncomingCall = NativeModules.FullScreenNotificationIncomingCall;
+const eventEmitter = new NativeEventEmitter(RNNotificationIncomingCall);
 
-const FullScreenNotificationIncomingCall = NativeModules.FullScreenNotificationIncomingCall
-  ? NativeModules.FullScreenNotificationIncomingCall
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
-
-export function multiply(a: number, b: number): Promise<number> {
-  return FullScreenNotificationIncomingCall.multiply(a, b);
+enum RNNotificationEvent {
+  RNNotificationAnswerAction = 'RNNotificationAnswerAction',
+  RNNotificationEndCallAction = 'RNNotificationEndCallAction'
 }
+
+
+class RNNotificationCall {
+  private _notificationEventHandlers;
+  constructor() {
+    this._notificationEventHandlers = new Map();
+  }
+  displayNotification = (uuid: string, name: string, avatar: string | null, info: string, channelId: string, channelName: string, timeout: number) => {
+    console.log('displayNotification')
+    RNNotificationIncomingCall.displayNotification(uuid, name, avatar, info, channelId, channelName, timeout)
+  }
+  hideNotification = () => {
+    RNNotificationIncomingCall.hideNotification()
+  }
+  addEventListener = (type: any, handler: any) => {
+    let listener;
+    if (type === 'answer') {
+      listener = eventEmitter.addListener(
+        RNNotificationEvent.RNNotificationAnswerAction,
+        (eventPayload) => {
+          handler(eventPayload);
+        }
+      );
+    } else if (type === 'endCall') {
+      listener = eventEmitter.addListener(
+        RNNotificationEvent.RNNotificationEndCallAction,
+        (eventPayload) => {
+          handler(eventPayload);
+        }
+      );
+    }
+    else {
+      return;
+    }
+    this._notificationEventHandlers.set(type, listener);
+  };
+
+  removeEventListener = (type: any) => {
+    const listener = this._notificationEventHandlers.get(type);
+    if (!listener) {
+      return;
+    }
+
+    listener.remove();
+    this._notificationEventHandlers.delete(type);
+  };
+}
+
+export default new RNNotificationCall();

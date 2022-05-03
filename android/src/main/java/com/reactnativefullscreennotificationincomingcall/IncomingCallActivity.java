@@ -54,6 +54,7 @@ public class IncomingCallActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    Log.d(TAG, "1111111111111"  );
     fa = this;
     setContentView(R.layout.activity_call_incoming);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -156,7 +157,7 @@ public class IncomingCallActivity extends AppCompatActivity {
         }
       }
     }
-    FullScreenNotificationIncomingCallModule.sendEventToJs("answerCall", params);
+    FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationAnswerAction, params);
     stopService(new Intent(this, IncomingCallService.class));
     if (Build.VERSION.SDK_INT >= 21) {
       finishAndRemoveTask();
@@ -171,7 +172,7 @@ public class IncomingCallActivity extends AppCompatActivity {
     params.putBoolean("accept", false);
     params.putString("callUUID", uuid);
     params.putString("endAction",action);
-    FullScreenNotificationIncomingCallModule.sendEventToJs("endCall", params);
+    FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction, params);
     stopService(new Intent(this, IncomingCallService.class));
     if (android.os.Build.VERSION.SDK_INT >= 21) {
       finishAndRemoveTask();

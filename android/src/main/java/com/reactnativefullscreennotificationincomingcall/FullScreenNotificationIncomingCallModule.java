@@ -1,8 +1,10 @@
 package com.reactnativefullscreennotificationincomingcall;
 
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -15,6 +17,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 @ReactModule(name = FullScreenNotificationIncomingCallModule.NAME)
 public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJavaModule {
     public static final String NAME = "FullScreenNotificationIncomingCall";
+    private static final String TAG = "FullscreenModule";
     public static ReactApplicationContext reactContext;
     public FullScreenNotificationIncomingCallModule(ReactApplicationContext context) {
         super(context);
@@ -28,11 +31,14 @@ public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJa
     }
 
     @ReactMethod
-    public void displayNotification(String uuid, String name, String avatar, String info,String channelId,String channelName, int timeout) {
+    public void displayNotification(String uuid, String name,@Nullable String avatar, String info,String channelId,String channelName, int timeout) {
+      Log.d(TAG, "displayNotification ui"  );
       Intent intent = new Intent(getReactApplicationContext(), IncomingCallService.class);
       intent.putExtra("uuid", uuid);
       intent.putExtra("name",name );
+      if(avatar!=null){
       intent.putExtra("avatar", avatar);
+      }
       intent.putExtra("info", info);
       intent.putExtra("channelId", channelId);
       intent.putExtra("channelName", channelName);
@@ -43,16 +49,16 @@ public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJa
 
     @ReactMethod
     public void hideNotification() {
-//      if (UnlockScreenActivity.active) {
-//        UnlockScreenActivity.getInstance().destroyActivity(false);
-//      }
+     if (IncomingCallActivity.active) {
+       IncomingCallActivity.getInstance().destroyActivity(false);
+     }
        Intent intent = new Intent(getReactApplicationContext(), IncomingCallService.class);
        intent.setAction(Constants.HIDE_NOTIFICATION_INCOMING_CALL);
        getReactApplicationContext().stopService(intent);
     }
 
     @ReactMethod
-    public static void sendEventToJs(String eventName, WritableMap params) {
+    public static void sendEventToJs(String eventName,@Nullable WritableMap params) {
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName,params);
     }
 
