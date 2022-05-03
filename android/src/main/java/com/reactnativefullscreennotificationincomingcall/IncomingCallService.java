@@ -83,7 +83,9 @@ public class IncomingCallService extends Service {
     Bundle bundle = intent.getExtras();
     fullScreenIntent.putExtra("uuid", uuid);
     fullScreenIntent.putExtra("name", bundle.getString("name"));
-    fullScreenIntent.putExtra("avatar", bundle.getString("avatar"));
+    if(bundle.getString("avatar")!=null){
+      fullScreenIntent.putExtra("avatar", bundle.getString("avatar"));
+    }
     fullScreenIntent.putExtra("info", bundle.getString("info"));
     fullScreenIntent.putExtra("timeout", timeoutNumber);
     fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -176,7 +178,7 @@ private void startRinging() {
             WritableMap params = Arguments.createMap();
             params.putString("callUUID", uuid);
             params.putString("endAction",Constants.ACTION_HIDE_CALL);
-            FullScreenNotificationIncomingCallModule.sendEventToJs("endCall",params);
+            FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction,params);
           stopRinging();
           cancelTimer();
           stopForeground(true);
@@ -203,7 +205,7 @@ private void startRinging() {
           }
           WritableMap params = Arguments.createMap();
           params.putString("callUUID", uuid);
-          FullScreenNotificationIncomingCallModule.sendEventToJs("answerCall",params);
+          FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationAnswerAction,params);
           stopRinging();
           stopForeground(true);
         }else if(action.equals(Constants.ACTION_PRESS_DECLINE_CALL)){
@@ -215,7 +217,7 @@ private void startRinging() {
             WritableMap params = Arguments.createMap();
             params.putString("callUUID", uuid);
             params.putString("endAction", Constants.ACTION_REJECTED_CALL);
-          FullScreenNotificationIncomingCallModule.sendEventToJs("endCall",params);
+          FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction,params);
             stopRinging();
             stopForeground(true);
         }
