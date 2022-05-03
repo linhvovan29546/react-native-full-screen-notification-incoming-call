@@ -3,9 +3,9 @@ For more information about **Display time-sensitive notifications** (https://dev
 # Screenshot   
 <table>
   <tr>
-    <td><p align="center"><img src="/docs/screenshot1.png" height="500"></p></td>
- <td><p align="center"><img src="/docs/screenshot2.png" height="500"></p></td>
-  <td><p align="center"><img src="/docs/screenshot3.png" height="500"></p></td>
+    <td><p align="center"><img src="/docs/screenshot1.jpeg" height="500"></p></td>
+ <td><p align="center"><img src="/docs/screenshot2.jpeg" height="500"></p></td>
+  <td><p align="center"><img src="/docs/screenshot3.jpeg" height="500"></p></td>
   </tr>
 </table>
 
