@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -23,6 +24,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -110,13 +112,15 @@ public class IncomingCallService extends Service {
               onButtonNotificationClick(1,Constants.ACTION_PRESS_ANSWER_CALL)
         )
       .setAutoCancel(true)
-      .setColor(getResources().getColor(R.color.colorAccent))
         // Use a full-screen intent only for the highest-priority alerts where you
         // have an associated activity that you would like to launch after the user
         // interacts with the notification. Also, if your app targets Android 10
         // or higher, you need to request the USE_FULL_SCREEN_INTENT permission in
         // order for the platform to invoke this notification.
         .setFullScreenIntent(fullScreenPendingIntent, true);
+    if(bundle.getString("notificationColor")!=null){
+      notificationBuilder.setColor(getColorForResourceName(context,bundle.getString("notificationColor")));
+    }
     String iconName = bundle.getString("icon");
     if (iconName != null) {
       notificationBuilder.setSmallIcon(getResourceIdForResourceName(context, iconName));
@@ -236,6 +240,16 @@ private void startRinging() {
       resourceId = context.getResources().getIdentifier(resourceName, "mipmap", context.getPackageName());
     }
     return resourceId;
+  }
+  private int getColorForResourceName(Context context, String colorPath){
+    // java
+    Resources res = context.getResources();
+    String packageName = context.getPackageName();
+
+    int colorId = res.getIdentifier(colorPath, "color", packageName);
+    int desiredColor = ContextCompat.getColor(context, colorId);
+
+    return desiredColor;
   }
 }
 

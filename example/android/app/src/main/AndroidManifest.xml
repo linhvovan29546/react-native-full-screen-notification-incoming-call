@@ -26,6 +26,7 @@
         </intent-filter>
       </activity>
       <activity android:name="com.reactnativefullscreennotificationincomingcall.IncomingCallActivity"
+        android:theme="@style/incomingCall"
         android:showOnLockScreen="true"
         android:taskAffinity=""
         android:launchMode="singleTask"
