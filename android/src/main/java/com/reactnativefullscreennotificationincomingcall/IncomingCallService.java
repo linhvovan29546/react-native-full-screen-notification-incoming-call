@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -33,9 +34,8 @@ public class IncomingCallService extends Service {
   private static Runnable handleTimeout;
   public static Handler callhandle;
   private String uuid = "";
-  private int timeoutNumber;
-  private String channelId="incomingcallnotifcation";
-  private String channelName="Notification incoming ";
+  private Integer timeoutNumber=0;
+  private static final String TAG = "FullscreenSevice";
   public int onStartCommand(Intent intent, int flags, int startId) {
     String action = intent.getAction();
     if (action != null) {
@@ -46,7 +46,10 @@ public class IncomingCallService extends Service {
         getApplicationContext().registerReceiver(mReceiver, filter);
         Bundle bundle = intent.getExtras();
         uuid= bundle.getString("uuid");
-        timeoutNumber=bundle.getInt("timeout");
+        if(bundle.containsKey("timeout")){
+          Log.d(TAG, "has time out");
+          timeoutNumber=bundle.getInt("timeout");
+        }
         Notification notification = buildNotification(getApplicationContext(), intent);
         startForeground(1, notification);
         startRinging();
@@ -83,29 +86,27 @@ public class IncomingCallService extends Service {
     Bundle bundle = intent.getExtras();
     fullScreenIntent.putExtra("uuid", uuid);
     fullScreenIntent.putExtra("name", bundle.getString("name"));
-    if(bundle.getString("avatar")!=null){
-      fullScreenIntent.putExtra("avatar", bundle.getString("avatar"));
-    }
+    fullScreenIntent.putExtra("avatar", bundle.getString("avatar"));
     fullScreenIntent.putExtra("info", bundle.getString("info"));
-    fullScreenIntent.putExtra("timeout", timeoutNumber);
+    fullScreenIntent.putExtra("declineText", bundle.getString("declineText"));
+    fullScreenIntent.putExtra("answerText", bundle.getString("answerText"));
     fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     NotificationCompat.Builder notificationBuilder;
     notificationBuilder = new NotificationCompat.Builder(context);
-    notificationBuilder.setSmallIcon(R.mipmap.ic_launcher_round)
-        .setContentTitle(bundle.getString("name"))
+    notificationBuilder.setContentTitle(bundle.getString("name"))
         .setContentText(bundle.getString("info"))
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .setCategory(NotificationCompat.CATEGORY_CALL)
         .addAction(
           0,
-          getResources().getString(R.string.decline),
+          bundle.getString("declineText"),
           onButtonNotificationClick(0,Constants.ACTION_PRESS_DECLINE_CALL)
        )
         .addAction(
             0,
-          getResources().getString(R.string.accept),
+         bundle.getString("answerText"),
               onButtonNotificationClick(1,Constants.ACTION_PRESS_ANSWER_CALL)
         )
       .setAutoCancel(true)
@@ -116,7 +117,10 @@ public class IncomingCallService extends Service {
         // or higher, you need to request the USE_FULL_SCREEN_INTENT permission in
         // order for the platform to invoke this notification.
         .setFullScreenIntent(fullScreenPendingIntent, true);
-
+    String iconName = bundle.getString("icon");
+    if (iconName != null) {
+      notificationBuilder.setSmallIcon(getResourceIdForResourceName(context, iconName));
+    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       NotificationChannel notificationChannel=new NotificationChannel(bundle.getString("channelId"), bundle.getString("channelName"), NotificationManager.IMPORTANCE_HIGH);
       notificationChannel.setSound(null, null);
@@ -124,7 +128,9 @@ public class IncomingCallService extends Service {
       notificationManager.createNotificationChannel(notificationChannel);
       notificationBuilder.setChannelId(bundle.getString("channelId"));
     }
-    setTimeOutEndCall(uuid);
+    if(timeoutNumber > 0){
+      setTimeOutEndCall(uuid);
+    }
     return notificationBuilder.build();
   }
 
@@ -136,6 +142,7 @@ public class IncomingCallService extends Service {
   @Override
   public void onDestroy() {
     super.onDestroy();
+    Log.d(TAG, "onDestroy service");
     stopRinging();
     cancelTimer();
     stopForeground(true);
@@ -213,17 +220,23 @@ private void startRinging() {
           if (IncomingCallActivity.active) {
             IncomingCallActivity.getInstance().destroyActivity(false);
           }
-            Bundle bundle = intent.getExtras();
             WritableMap params = Arguments.createMap();
             params.putString("callUUID", uuid);
             params.putString("endAction", Constants.ACTION_REJECTED_CALL);
           FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction,params);
             stopRinging();
-            stopForeground(true);
+          stopForeground(true);
         }
       }
     }
   };
+  private int getResourceIdForResourceName(Context context, String resourceName) {
+    int resourceId = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
+    if (resourceId == 0) {
+      resourceId = context.getResources().getIdentifier(resourceName, "mipmap", context.getPackageName());
+    }
+    return resourceId;
+  }
 }
 
 
