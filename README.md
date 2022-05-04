@@ -72,7 +72,6 @@ In `AndroidManifest.xml`:
          android:stopWithTask="false"
          android:exported="true" />
 
-      <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
      .....
       </application>
 ```
