@@ -20,6 +20,7 @@ import com.squareup.picasso.Picasso;
 
 public class IncomingCallActivity extends AppCompatActivity {
   private static final String TAG = "MessagingService";
+  private static final String TAG_KEYGUARD = "Incoming:unLock";
   private TextView tvName;
   private TextView tvInfo;
   private TextView tvDecline;
@@ -57,6 +58,16 @@ public class IncomingCallActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     fa = this;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+      setShowWhenLocked(true);
+      setTurnScreenOn(true);
+      //Some devices need the code below to work when the device is locked
+      KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+      if (keyguardManager.isDeviceLocked()) {
+        KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock(TAG_KEYGUARD);
+        keyguardLock.disableKeyguard();
+      }
+    }
     setContentView(R.layout.activity_call_incoming);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
       setShowWhenLocked(true);
