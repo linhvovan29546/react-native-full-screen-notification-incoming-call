@@ -58,6 +58,8 @@ In `AndroidManifest.xml`:
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <application ....>
     <activity android:name="com.reactnativefullscreennotificationincomingcall.IncomingCallActivity"
         android:theme="@style/incomingCall"
