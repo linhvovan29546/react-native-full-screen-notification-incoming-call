@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -31,8 +33,6 @@ import com.facebook.react.bridge.WritableMap;
 
 
 public class IncomingCallService extends Service {
-  private static Vibrator vibrator;
-  private static Ringtone ringtone;
   private static Runnable handleTimeout;
   public static Handler callhandle;
   private String uuid = "";
@@ -54,7 +54,6 @@ public class IncomingCallService extends Service {
         }
         Notification notification = buildNotification(getApplicationContext(), intent);
         startForeground(1, notification);
-        startRinging();
         sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
       }else if(action.equals(Constants.HIDE_NOTIFICATION_INCOMING_CALL)){
         stopSelf();
@@ -92,15 +91,31 @@ public class IncomingCallService extends Service {
     fullScreenIntent.putExtra("info", bundle.getString("info"));
     fullScreenIntent.putExtra("declineText", bundle.getString("declineText"));
     fullScreenIntent.putExtra("answerText", bundle.getString("answerText"));
+    String channelId=bundle.getString("channelId");
     fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      NotificationChannel notificationChannel=new NotificationChannel(channelId, bundle.getString("channelName"), NotificationManager.IMPORTANCE_HIGH);
+      notificationChannel.setSound(RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE),
+        new AudioAttributes.Builder()
+          .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+          .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+          .build());
+      notificationChannel.enableLights(true);
+      notificationChannel.enableVibration(true);
+      notificationChannel.setLightColor(Color.WHITE);
+      notificationChannel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+      notificationChannel.setVibrationPattern(new long[] { 0, 1000, 800});
+      notificationManager.createNotificationChannel(notificationChannel);
+    }
     NotificationCompat.Builder notificationBuilder;
-    notificationBuilder = new NotificationCompat.Builder(context);
+    notificationBuilder = new NotificationCompat.Builder(context,channelId);
     notificationBuilder.setContentTitle(bundle.getString("name"))
         .setContentText(bundle.getString("info"))
-        .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .setPriority(NotificationCompat.PRIORITY_MAX)
         .setCategory(NotificationCompat.CATEGORY_CALL)
+        .setContentIntent(fullScreenPendingIntent)
         .addAction(
           0,
           bundle.getString("declineText"),
@@ -112,6 +127,10 @@ public class IncomingCallService extends Service {
               onButtonNotificationClick(1,Constants.ACTION_PRESS_ANSWER_CALL)
         )
       .setAutoCancel(true)
+      .setOngoing(true)
+      .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+      .setVibrate(new long[] { 0, 1000, 800})
+      .setSound(RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE))
         // Use a full-screen intent only for the highest-priority alerts where you
         // have an associated activity that you would like to launch after the user
         // interacts with the notification. Also, if your app targets Android 10
@@ -124,13 +143,6 @@ public class IncomingCallService extends Service {
     String iconName = bundle.getString("icon");
     if (iconName != null) {
       notificationBuilder.setSmallIcon(getResourceIdForResourceName(context, iconName));
-    }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      NotificationChannel notificationChannel=new NotificationChannel(bundle.getString("channelId"), bundle.getString("channelName"), NotificationManager.IMPORTANCE_HIGH);
-      notificationChannel.setSound(null, null);
-      notificationChannel.enableVibration(false);
-      notificationManager.createNotificationChannel(notificationChannel);
-      notificationBuilder.setChannelId(bundle.getString("channelId"));
     }
     if(timeoutNumber > 0){
       setTimeOutEndCall(uuid);
@@ -147,37 +159,8 @@ public class IncomingCallService extends Service {
   public void onDestroy() {
     super.onDestroy();
     Log.d(TAG, "onDestroy service");
-    stopRinging();
     cancelTimer();
     stopForeground(true);
-  }
-private void startRinging() {
-    long[] pattern = {0, 1000, 800};
-    vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-    int ringerMode = ((AudioManager) getSystemService(Context.AUDIO_SERVICE)).getRingerMode();
-    if(ringerMode == AudioManager.RINGER_MODE_SILENT) return;
-
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-      VibrationEffect vibe = VibrationEffect.createWaveform(pattern, 2);
-      vibrator.vibrate(vibe);
-    }else{
-      vibrator.vibrate(pattern, 0);
-    }
-    if(ringerMode == AudioManager.RINGER_MODE_VIBRATE) return;
-    ringtone = RingtoneManager.getRingtone(this, RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE));
-    ringtone.play();
-  }
-
-  private  void stopRinging() {
-    if (vibrator != null){
-      vibrator.cancel();
-    }
-    int ringerMode = ((AudioManager) getSystemService(Context.AUDIO_SERVICE)).getRingerMode();
-    if(ringerMode != AudioManager.RINGER_MODE_NORMAL) return;
-
-    if(ringtone != null){
-    ringtone.stop();
-    }
   }
   public  void setTimeOutEndCall(String uuid) {
     callhandle=new Handler();
@@ -190,7 +173,6 @@ private void startRinging() {
             params.putString("callUUID", uuid);
             params.putString("endAction",Constants.ACTION_HIDE_CALL);
             FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction,params);
-          stopRinging();
           cancelTimer();
           stopForeground(true);
       }
@@ -217,7 +199,6 @@ private void startRinging() {
           WritableMap params = Arguments.createMap();
           params.putString("callUUID", uuid);
           FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationAnswerAction,params);
-          stopRinging();
           stopForeground(true);
         }else if(action.equals(Constants.ACTION_PRESS_DECLINE_CALL)){
           cancelTimer();
@@ -228,7 +209,6 @@ private void startRinging() {
             params.putString("callUUID", uuid);
             params.putString("endAction", Constants.ACTION_REJECTED_CALL);
           FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction,params);
-            stopRinging();
           stopForeground(true);
         }
       }
