@@ -54,7 +54,9 @@ public class IncomingCallService extends Service {
         }
         Notification notification = buildNotification(getApplicationContext(), intent);
         startForeground(1, notification);
-        sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S)  {
+          sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+        }
       }else if(action.equals(Constants.HIDE_NOTIFICATION_INCOMING_CALL)){
         stopSelf();
       }else if(action.equals(Constants.ACTION_START_ACTIVITY)){
@@ -79,7 +81,7 @@ public class IncomingCallService extends Service {
   private PendingIntent onButtonNotificationClick(int id, String action) {
     Intent  buttonIntent= new Intent();
     buttonIntent.setAction(action);
-    return PendingIntent.getBroadcast(this,id , buttonIntent, 0);
+    return PendingIntent.getBroadcast(this,id , buttonIntent, PendingIntent.FLAG_IMMUTABLE);
   }
 
   private Notification buildNotification(Context context, Intent intent) {
@@ -93,7 +95,7 @@ public class IncomingCallService extends Service {
     fullScreenIntent.putExtra("answerText", bundle.getString("answerText"));
     String channelId=bundle.getString("channelId");
     fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       NotificationChannel notificationChannel=new NotificationChannel(channelId, bundle.getString("channelName"), NotificationManager.IMPORTANCE_HIGH);
@@ -191,8 +193,11 @@ public class IncomingCallService extends Service {
       if (action != null) {
         if (action.equals(Constants.ACTION_PRESS_ANSWER_CALL)) {
           cancelTimer();
-          Intent it = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-          context.sendBroadcast(it);
+
+          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S)  {
+            Intent it = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            context.sendBroadcast(it);
+          }
           if (IncomingCallActivity.active) {
             IncomingCallActivity.getInstance().destroyActivity(false);
           }

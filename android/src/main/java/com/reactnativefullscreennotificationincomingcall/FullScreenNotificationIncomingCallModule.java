@@ -1,7 +1,10 @@
 package com.reactnativefullscreennotificationincomingcall;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -68,18 +71,11 @@ public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJa
 
     @ReactMethod
     public static void sendEventToJs(String eventName,@Nullable WritableMap params) {
-        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName,params);
+      reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
     }
 
-
-
-
-    // Example method
-    // See https://reactnative.dev/docs/native-modules-android
-    @ReactMethod
-    public void multiply(int a, int b, Promise promise) {
-        promise.resolve(a * b);
+    private Context getAppContext() {
+        return reactContext.getApplicationContext();
     }
 
-    public static native int nativeMultiply(int a, int b);
 }
