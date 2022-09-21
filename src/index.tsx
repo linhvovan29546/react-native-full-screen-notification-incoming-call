@@ -25,14 +25,17 @@ class RNNotificationCall {
   constructor() {
     this._notificationEventHandlers = new Map();
   }
+
   displayNotification = (uuid: string, avatar: string | null, timeout: number | null, foregroundOptions: foregroundOptionsModel) => {
     if (!isAndroid) return
     RNNotificationIncomingCall.displayNotification(uuid, avatar, timeout ? timeout : 0, foregroundOptions)
   }
+
   hideNotification = () => {
     if (!isAndroid) return
     RNNotificationIncomingCall.hideNotification()
   }
+
   addEventListener = (type: any, handler: any) => {
     if (!isAndroid) return
     let listener;
