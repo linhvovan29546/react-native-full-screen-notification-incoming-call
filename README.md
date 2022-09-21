@@ -62,6 +62,7 @@ In `AndroidManifest.xml`:
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <application ....>
     <activity android:name="com.reactnativefullscreennotificationincomingcall.IncomingCallActivity"
+        android:exported="true" 
         android:theme="@style/incomingCall"
         android:showOnLockScreen="true"
         android:taskAffinity=""
