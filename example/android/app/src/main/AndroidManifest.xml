@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -41,7 +42,6 @@
          android:stopWithTask="false"
          android:exported="true" />
 
-      <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
     </application>
 
 </manifest>

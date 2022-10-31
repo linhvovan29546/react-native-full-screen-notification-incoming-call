@@ -21,7 +21,7 @@ def safeExtGet(prop, fallback) {
 android {
     compileSdkVersion safeExtGet('FullScreenNotificationIncomingCall_compileSdkVersion', 31)
     defaultConfig {
-        minSdkVersion safeExtGet('FullScreenNotificationIncomingCall_minSdkVersion', 16)
+        minSdkVersion safeExtGet('FullScreenNotificationIncomingCall_minSdkVersion', 21)
         targetSdkVersion safeExtGet('FullScreenNotificationIncomingCall_targetSdkVersion', 31)
         versionCode 1
         versionName "1.0"
