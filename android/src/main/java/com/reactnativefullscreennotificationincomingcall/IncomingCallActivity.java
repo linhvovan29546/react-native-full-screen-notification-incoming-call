@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.airbnb.lottie.LottieAnimationView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,9 +27,13 @@ public class IncomingCallActivity extends AppCompatActivity {
   private TextView tvDecline;
   private TextView tvAccept;
   private ImageView ivAvatar;
+  private LottieAnimationView acceptCallBtn;
+  private LottieAnimationView rejectCallBtn;
+  private LinearLayout lnDeclineCall;
+  private LinearLayout lnAcceptCall;
+
   private String uuid = "";
   static boolean active = false;
-  private static Activity fa;
   static IncomingCallActivity instance;
 
   public static IncomingCallActivity getInstance() {
@@ -57,7 +62,6 @@ public class IncomingCallActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    fa = this;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
       setShowWhenLocked(true);
       setTurnScreenOn(true);
@@ -69,10 +73,6 @@ public class IncomingCallActivity extends AppCompatActivity {
       }
     }
     setContentView(R.layout.activity_call_incoming);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-      setShowWhenLocked(true);
-      setTurnScreenOn(true);
-    }
     getWindow().addFlags(
       WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
         | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
@@ -84,6 +84,8 @@ public class IncomingCallActivity extends AppCompatActivity {
     ivAvatar = findViewById(R.id.ivAvatar);
     tvDecline=findViewById(R.id.tvDecline);
     tvAccept=findViewById(R.id.tvAccept);
+    lnDeclineCall = findViewById(R.id.lnDeclineCall);
+    lnAcceptCall = findViewById(R.id.lnAcceptCall);
     Bundle bundle = getIntent().getExtras();
     if (bundle != null) {
       if (bundle.containsKey("uuid")) {
@@ -114,8 +116,7 @@ public class IncomingCallActivity extends AppCompatActivity {
       }
     }
 
-    LottieAnimationView acceptCallBtn = findViewById(R.id.ivAcceptCall);
-    acceptCallBtn.setOnClickListener(new View.OnClickListener() {
+    lnAcceptCall.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         try {
@@ -129,8 +130,7 @@ public class IncomingCallActivity extends AppCompatActivity {
       }
     });
 
-    LottieAnimationView rejectCallBtn = findViewById(R.id.ivDeclineCall);
-    rejectCallBtn.setOnClickListener(new View.OnClickListener() {
+    lnDeclineCall.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         dismissDialing(Constants.ACTION_REJECTED_CALL);
