@@ -56,6 +56,6 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation "com.airbnb.android:lottie:5.0.3" // create ui animation
+    implementation "com.airbnb.android:lottie:5.1.1" // create ui animation
     implementation 'com.squareup.picasso:picasso:2.71828' 
 }
