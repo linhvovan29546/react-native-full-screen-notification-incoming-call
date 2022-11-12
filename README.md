@@ -61,14 +61,22 @@ In `AndroidManifest.xml`:
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <application ....>
-    <activity android:name="com.reactnativefullscreennotificationincomingcall.IncomingCallActivity"
-        android:exported="true" 
+      <activity android:name="com.reactnativefullscreennotificationincomingcall.IncomingCallActivity"
         android:theme="@style/incomingCall"
-        android:showOnLockScreen="true"
-        android:taskAffinity=""
         android:launchMode="singleTask"
         android:excludeFromRecents="true"
-       />
+        android:exported="true"
+        android:showWhenLocked="true"
+        android:turnScreenOn="true"
+        />
+        <activity android:name="com.reactnativefullscreennotificationincomingcall.NotificationReceiverActivity"
+        android:theme="@style/incomingCall"
+        android:launchMode="singleTask"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:showWhenLocked="true"
+        android:turnScreenOn="true"
+        />
          <service
          android:name="com.reactnativefullscreennotificationincomingcall.IncomingCallService"
          android:enabled="true"
