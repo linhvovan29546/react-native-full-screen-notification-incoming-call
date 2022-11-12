@@ -23,6 +23,8 @@ import android.os.IBinder;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
+import android.view.WindowManager;
+import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -40,6 +42,7 @@ public class IncomingCallService extends Service {
   private boolean isRegistered = false;
   // you can perform a click only once time
   private boolean canClick = true;
+  private Bundle bundleData;
   private static final String TAG = "FullscreenSevice";
   public int onStartCommand(Intent intent, int flags, int startId) {
     String action = intent.getAction();
@@ -79,6 +82,12 @@ public class IncomingCallService extends Service {
     stopSelf();
   }
 
+  private PendingIntent onPressContentIntent(int id, String action) {
+    Intent  buttonIntent= new Intent();
+    buttonIntent.setAction(action);
+    return PendingIntent.getBroadcast(this,id , buttonIntent, PendingIntent.FLAG_IMMUTABLE);
+  }
+
   private PendingIntent onButtonNotificationClick(int id, String action) {
     Intent  buttonIntent= new Intent();
     buttonIntent.setAction(action);
@@ -88,15 +97,12 @@ public class IncomingCallService extends Service {
   private Notification buildNotification(Context context, Intent intent) {
     Intent fullScreenIntent = new Intent(context, IncomingCallActivity.class);
     Bundle bundle = intent.getExtras();
-    fullScreenIntent.putExtra("uuid", uuid);
-    fullScreenIntent.putExtra("name", bundle.getString("name"));
-    fullScreenIntent.putExtra("avatar", bundle.getString("avatar"));
-    fullScreenIntent.putExtra("info", bundle.getString("info"));
-    fullScreenIntent.putExtra("declineText", bundle.getString("declineText"));
-    fullScreenIntent.putExtra("answerText", bundle.getString("answerText"));
+    bundleData=bundle;
+    fullScreenIntent.putExtras(bundle);
     String channelId=bundle.getString("channelId");
     fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    PendingIntent pressNotification= onPressContentIntent(2,Constants.onPressNotification);
     NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       NotificationChannel notificationChannel=new NotificationChannel(channelId, bundle.getString("channelName"), NotificationManager.IMPORTANCE_HIGH);
@@ -118,7 +124,7 @@ public class IncomingCallService extends Service {
         .setContentText(bundle.getString("info"))
         .setPriority(NotificationCompat.PRIORITY_MAX)
         .setCategory(NotificationCompat.CATEGORY_CALL)
-        .setContentIntent(fullScreenPendingIntent)
+        .setContentIntent(pressNotification)
         .addAction(
           0,
           bundle.getString("declineText"),
@@ -171,6 +177,7 @@ public class IncomingCallService extends Service {
     IntentFilter filter = new IntentFilter();
     filter.addAction(Constants.ACTION_PRESS_ANSWER_CALL);
     filter.addAction(Constants.ACTION_PRESS_DECLINE_CALL);
+    filter.addAction(Constants.onPressNotification);
     getApplicationContext().registerReceiver(mReceiver, filter);
     isRegistered = true;
   }
@@ -208,7 +215,16 @@ public class IncomingCallService extends Service {
     public void onReceive(Context context, Intent intent) {
       String action = intent.getAction();
       if (action != null) {
-        if (action.equals(Constants.ACTION_PRESS_ANSWER_CALL)) {
+        if (action.equals(Constants.onPressNotification)) {
+          if(!canClick)return;
+          Log.d(TAG, "11231231231 ");
+          Bundle bundle = bundleData;
+          Intent newIntent = new Intent(getApplicationContext(), IncomingCallActivity.class);
+          newIntent.putExtras(bundle);
+          newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          getApplicationContext().startActivity(newIntent);
+        }
+        else if (action.equals(Constants.ACTION_PRESS_ANSWER_CALL)) {
           if(!canClick)return;
           canClick=false;
           cancelTimer();
