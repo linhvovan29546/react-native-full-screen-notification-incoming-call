@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.airbnb.lottie.LottieAnimationView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,9 +27,13 @@ public class IncomingCallActivity extends AppCompatActivity {
   private TextView tvDecline;
   private TextView tvAccept;
   private ImageView ivAvatar;
+  private LottieAnimationView acceptCallBtn;
+  private LottieAnimationView rejectCallBtn;
+  private LinearLayout lnDeclineCall;
+  private LinearLayout lnAcceptCall;
+
   private String uuid = "";
   static boolean active = false;
-  private static Activity fa;
   static IncomingCallActivity instance;
 
   public static IncomingCallActivity getInstance() {
@@ -57,7 +62,6 @@ public class IncomingCallActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    fa = this;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
       setShowWhenLocked(true);
       setTurnScreenOn(true);
@@ -69,10 +73,6 @@ public class IncomingCallActivity extends AppCompatActivity {
       }
     }
     setContentView(R.layout.activity_call_incoming);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-      setShowWhenLocked(true);
-      setTurnScreenOn(true);
-    }
     getWindow().addFlags(
       WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
         | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
@@ -84,11 +84,12 @@ public class IncomingCallActivity extends AppCompatActivity {
     ivAvatar = findViewById(R.id.ivAvatar);
     tvDecline=findViewById(R.id.tvDecline);
     tvAccept=findViewById(R.id.tvAccept);
+    lnDeclineCall = findViewById(R.id.lnDeclineCall);
+    lnAcceptCall = findViewById(R.id.lnAcceptCall);
     Bundle bundle = getIntent().getExtras();
     if (bundle != null) {
       if (bundle.containsKey("uuid")) {
         uuid = bundle.getString("uuid");
-
       }
       if (bundle.containsKey("name")) {
         String name = bundle.getString("name");
@@ -114,8 +115,7 @@ public class IncomingCallActivity extends AppCompatActivity {
       }
     }
 
-    LottieAnimationView acceptCallBtn = findViewById(R.id.ivAcceptCall);
-    acceptCallBtn.setOnClickListener(new View.OnClickListener() {
+    lnAcceptCall.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         try {
@@ -129,8 +129,7 @@ public class IncomingCallActivity extends AppCompatActivity {
       }
     });
 
-    LottieAnimationView rejectCallBtn = findViewById(R.id.ivDeclineCall);
-    rejectCallBtn.setOnClickListener(new View.OnClickListener() {
+    lnDeclineCall.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         dismissDialing(Constants.ACTION_REJECTED_CALL);
@@ -159,21 +158,7 @@ public class IncomingCallActivity extends AppCompatActivity {
   private void acceptDialing() {
     active=false;
     WritableMap params = Arguments.createMap();
-    params.putBoolean("accept", true);
     params.putString("callUUID", uuid);
-    KeyguardManager mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-      if (mKeyguardManager.isDeviceLocked()) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          mKeyguardManager.requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {
-            @Override
-            public void onDismissSucceeded() {
-              super.onDismissSucceeded();
-            }
-          });
-        }
-      }
-    }
     FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationAnswerAction, params);
     stopService(new Intent(this, IncomingCallService.class));
     if (Build.VERSION.SDK_INT >= 21) {
@@ -186,7 +171,6 @@ public class IncomingCallActivity extends AppCompatActivity {
   private void dismissDialing(String action) {
     active=false;
     WritableMap params = Arguments.createMap();
-    params.putBoolean("accept", false);
     params.putString("callUUID", uuid);
     params.putString("endAction",action);
     FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction, params);

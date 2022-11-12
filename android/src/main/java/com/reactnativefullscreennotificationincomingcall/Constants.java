@@ -13,5 +13,7 @@ public class Constants {
   //event press answer/decline call
   public static final String RNNotificationAnswerAction="RNNotificationAnswerAction";
   public static final String RNNotificationEndCallAction="RNNotificationEndCallAction";
+  public static final String onPressNotification="onPressNotification";
+  
 
 }

@@ -1,22 +1,33 @@
 import * as React from 'react';
 import RNNotificationCall from '../../src/index'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import ramdomUuid from 'uuid-random';
+
 export default function App() {
   React.useEffect(() => {
-    RNNotificationCall.addEventListener("answer", () => {
-      console.log('press answer')
+
+    RNNotificationCall.addEventListener("answer", (payload) => {
+      console.log('press answer', payload.callUUID)
+
     })
-    RNNotificationCall.addEventListener("endCall", () => {
-      console.log('press endCall')
+    RNNotificationCall.addEventListener("endCall", (payload) => {
+      console.log('press endCall', payload.callUUID)
     })
     return () => {
       RNNotificationCall.removeEventListener("answer")
       RNNotificationCall.removeEventListener("endCall")
     };
+
+
   }, []);
+  const getCurrentCallId = () => {
+    return ramdomUuid().toLowerCase();
+  };
   const display = () => {
+    const uid = getCurrentCallId()
+    console.log('uid', uid)
     RNNotificationCall.displayNotification(
-      "22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad",
+      uid,
       null,
       30000,
       {
@@ -31,6 +42,9 @@ export default function App() {
       }
     )
   }
+  const onHide = () => {
+    RNNotificationCall.hideNotification()
+  }
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -43,6 +57,16 @@ export default function App() {
         <Text>Display</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity
+        style={{
+          backgroundColor: 'red',
+          padding: 15,
+          borderRadius: 15,
+          marginTop: 15
+        }}
+        onPress={onHide}>
+        <Text>Hide</Text>
+      </TouchableOpacity>
     </View>
   );
 }
