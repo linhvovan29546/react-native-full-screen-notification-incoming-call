@@ -37,15 +37,16 @@ public class IncomingCallService extends Service {
   public static Handler callhandle;
   private String uuid = "";
   private Integer timeoutNumber=0;
+  private boolean isRegistered = false;
+  // you can perform a click only once time
+  private boolean canClick = true;
   private static final String TAG = "FullscreenSevice";
   public int onStartCommand(Intent intent, int flags, int startId) {
     String action = intent.getAction();
     if (action != null) {
       if (action.equals(Constants.ACTION_SHOW_INCOMING_CALL)) {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Constants.ACTION_PRESS_ANSWER_CALL);
-        filter.addAction(Constants.ACTION_PRESS_DECLINE_CALL);
-        getApplicationContext().registerReceiver(mReceiver, filter);
+        canClick=true;
+        registerBroadcastPressEvent();
         Bundle bundle = intent.getExtras();
         uuid= bundle.getString("uuid");
         if(bundle.containsKey("timeout")){
@@ -163,7 +164,22 @@ public class IncomingCallService extends Service {
     Log.d(TAG, "onDestroy service");
     cancelTimer();
     stopForeground(true);
+    unregisterBroadcastPressEvent();
   }
+  public void registerBroadcastPressEvent() {
+    if (isRegistered) return;
+    IntentFilter filter = new IntentFilter();
+    filter.addAction(Constants.ACTION_PRESS_ANSWER_CALL);
+    filter.addAction(Constants.ACTION_PRESS_DECLINE_CALL);
+    getApplicationContext().registerReceiver(mReceiver, filter);
+    isRegistered = true;
+  }
+  public void unregisterBroadcastPressEvent() {
+    if (!isRegistered) return;
+    getApplicationContext().unregisterReceiver(mReceiver);
+    isRegistered = false;
+  }
+
   public  void setTimeOutEndCall(String uuid) {
     callhandle=new Handler();
     handleTimeout=new Runnable() {
@@ -186,14 +202,16 @@ public class IncomingCallService extends Service {
       callhandle.removeCallbacks(handleTimeout);
     }
   }
+
   private BroadcastReceiver mReceiver = new BroadcastReceiver() {
     @Override
     public void onReceive(Context context, Intent intent) {
       String action = intent.getAction();
       if (action != null) {
         if (action.equals(Constants.ACTION_PRESS_ANSWER_CALL)) {
+          if(!canClick)return;
+          canClick=false;
           cancelTimer();
-
           if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S)  {
             Intent it = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
             context.sendBroadcast(it);
@@ -206,6 +224,8 @@ public class IncomingCallService extends Service {
           FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationAnswerAction,params);
           stopForeground(true);
         }else if(action.equals(Constants.ACTION_PRESS_DECLINE_CALL)){
+          if(!canClick)return;
+          canClick=false;
           cancelTimer();
           if (IncomingCallActivity.active) {
             IncomingCallActivity.getInstance().destroyActivity(false);
