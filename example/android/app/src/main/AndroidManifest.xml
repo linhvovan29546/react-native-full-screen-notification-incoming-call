@@ -37,25 +37,21 @@
         android:exported="true"
         android:showWhenLocked="true"
         android:turnScreenOn="true"
-       />
+        />
+        <activity android:name="com.reactnativefullscreennotificationincomingcall.NotificationReceiverActivity"
+        android:theme="@style/incomingCall"
+        android:launchMode="singleTask"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:showWhenLocked="true"
+        android:turnScreenOn="true"
+        />
          <service
          android:name="com.reactnativefullscreennotificationincomingcall.IncomingCallService"
          android:enabled="true"
          android:stopWithTask="false"
          android:exported="true" />
-           <service android:name="io.wazo.callkeep.VoiceConnectionService"
-        android:label="Wazo"
-        android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-        android:foregroundServiceType="camera|microphone"
-        android:exported="true"
-    >
-
-        <intent-filter>
-            <action android:name="android.telecom.ConnectionService" />
-        </intent-filter>
-    </service>
-<service android:name="io.wazo.callkeep.RNCallKeepBackgroundMessagingService"  android:exported="true"/>
-
+  
     </application>
 
 </manifest>
