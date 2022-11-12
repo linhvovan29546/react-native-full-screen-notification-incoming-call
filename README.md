@@ -1,13 +1,26 @@
 **React Native Full Screen Notification Incoming Call** This library works based on android display time-sensitive notifications
 For more information about **Display time-sensitive notifications** (https://developer.android.com/training/notify-user/time-sensitive)
 # Screenshot   
-<table>
-  <tr>
-    <td><p align="center"><img src="/docs/screenshot1.jpeg" height="500"></p></td>
- <td><p align="center"><img src="/docs/screenshot2.jpeg" height="500"></p></td>
-  <td><p align="center"><img src="/docs/screenshot3.jpeg" height="500"></p></td>
-  </tr>
-</table>
+<p align="center" >
+  <kbd>
+    <img
+      src="https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/blob/master/docs/background.gif"
+      title="Background Demo"
+      float="left"
+    width="350" height="700"
+    >
+  </kbd>
+  <kbd>
+    <img
+      src="https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/blob/master/docs/block.gif"
+      title="Block Demo"
+      float="left"
+       width="350" height="700"
+    >
+  </kbd>
+  <br>
+  <em>FastImage example app.</em>
+</p>
 
 # react-native-full-screen-notification-incoming-call
 
