@@ -161,19 +161,19 @@ public class IncomingCallActivity extends AppCompatActivity {
     WritableMap params = Arguments.createMap();
     params.putBoolean("accept", true);
     params.putString("callUUID", uuid);
-    KeyguardManager mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-      if (mKeyguardManager.isDeviceLocked()) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          mKeyguardManager.requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {
-            @Override
-            public void onDismissSucceeded() {
-              super.onDismissSucceeded();
-            }
-          });
-        }
-      }
-    }
+//    KeyguardManager mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+//      if (mKeyguardManager.isDeviceLocked()) {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//          mKeyguardManager.requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {
+//            @Override
+//            public void onDismissSucceeded() {
+//              super.onDismissSucceeded();
+//            }
+//          });
+//        }
+//      }
+//    }
     FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationAnswerAction, params);
     stopService(new Intent(this, IncomingCallService.class));
     if (Build.VERSION.SDK_INT >= 21) {
