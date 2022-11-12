@@ -1,22 +1,26 @@
 import * as React from 'react';
 import RNNotificationCall from '../../src/index'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import ramdomUuid from 'uuid-random';
 export default function App() {
   React.useEffect(() => {
     RNNotificationCall.addEventListener("answer", () => {
       console.log('press answer')
     })
-    RNNotificationCall.addEventListener("endCall", () => {
-      console.log('press endCall')
+    RNNotificationCall.addEventListener("endCall", (value) => {
+      console.log('press endCall', value.callUUID)
     })
     return () => {
       RNNotificationCall.removeEventListener("answer")
       RNNotificationCall.removeEventListener("endCall")
     };
   }, []);
+  const getCurrentCallId = () => {
+    return ramdomUuid().toLowerCase();
+  };
   const display = () => {
     RNNotificationCall.displayNotification(
-      "22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad",
+      getCurrentCallId(),
       null,
       30000,
       {
