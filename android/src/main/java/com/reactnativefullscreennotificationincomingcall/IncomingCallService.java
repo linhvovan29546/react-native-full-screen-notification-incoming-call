@@ -17,7 +17,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -41,6 +42,7 @@ public class IncomingCallService extends Service {
     if (action != null) {
       if (action.equals(Constants.ACTION_SHOW_INCOMING_CALL)) {
         NotificationReceiverHandler.updateCanClick(true);
+        registerBroadcastPressEvent();
         Bundle bundle = intent.getExtras();
         uuid= bundle.getString("uuid");
         if(bundle.containsKey("timeout")){
@@ -75,6 +77,11 @@ public class IncomingCallService extends Service {
 
 
   private PendingIntent onButtonNotificationClick(int id, String action,String eventName) {
+    if(action == Constants.ACTION_PRESS_DECLINE_CALL){
+      Intent  buttonIntent= new Intent();
+      buttonIntent.setAction(action);
+      return PendingIntent.getBroadcast(this,id , buttonIntent, PendingIntent.FLAG_IMMUTABLE);
+    }
     Intent emptyScreenIntent = new Intent(this, NotificationReceiverActivity.class);
     emptyScreenIntent.setAction(action);
     emptyScreenIntent.putExtras(bundleData);
@@ -161,6 +168,20 @@ public class IncomingCallService extends Service {
     stopForeground(true);
   }
 
+  public void registerBroadcastPressEvent() {
+    if (isRegistered) return;
+    IntentFilter filter = new IntentFilter();
+    filter.addAction(Constants.ACTION_PRESS_DECLINE_CALL);
+    getApplicationContext().registerReceiver(mReceiver, filter);
+    isRegistered = true;
+  }
+
+  public void unregisterBroadcastPressEvent() {
+    if (!isRegistered) return;
+    getApplicationContext().unregisterReceiver(mReceiver);
+    isRegistered = false;
+  }
+
   public  void setTimeOutEndCall(String uuid) {
     callhandle=new Handler();
     handleTimeout=new Runnable() {
@@ -201,6 +222,31 @@ public class IncomingCallService extends Service {
 
     return desiredColor;
   }
+
+  private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      String action = intent.getAction();
+      if (action != null) {
+        if(action.equals(Constants.ACTION_PRESS_DECLINE_CALL)){
+          boolean canClick=NotificationReceiverHandler.getStatusClick();
+          if(!canClick)return;
+          NotificationReceiverHandler.disableClick();
+          cancelTimer();
+          if (IncomingCallActivity.active) {
+            IncomingCallActivity.getInstance().destroyActivity(false);
+          }
+          WritableMap params = Arguments.createMap();
+          params.putString("callUUID", uuid);
+          params.putString("endAction", Constants.ACTION_REJECTED_CALL);
+          FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction,params);
+          stopForeground(true);
+        }
+      }
+    }
+  };
+
+
 }
 
 
