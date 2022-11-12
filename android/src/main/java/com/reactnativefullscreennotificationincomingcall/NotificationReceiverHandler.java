@@ -23,6 +23,14 @@ public class NotificationReceiverHandler {
     openedInComing=status;
   }
 
+  static void disableClick(){
+    canClick=false;
+  }
+
+  static Boolean getStatusClick(){
+    return canClick;
+  }
+
   private static void handleNotificationIntent(Context context, Intent intent) {
     if(!canClick) return;
     String action= intent.getAction();
@@ -32,7 +40,6 @@ public class NotificationReceiverHandler {
         canClick=false;
         handleNotificationPressIntent(context, intent);
         break;
-      case Constants.ACTION_PRESS_DECLINE_CALL:
       case Constants.ACTION_PRESS_ANSWER_CALL:
         canClick=false;
         handleNotificationActionIntent(context,intent);
