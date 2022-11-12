@@ -90,7 +90,6 @@ public class IncomingCallActivity extends AppCompatActivity {
     if (bundle != null) {
       if (bundle.containsKey("uuid")) {
         uuid = bundle.getString("uuid");
-
       }
       if (bundle.containsKey("name")) {
         String name = bundle.getString("name");
@@ -159,21 +158,7 @@ public class IncomingCallActivity extends AppCompatActivity {
   private void acceptDialing() {
     active=false;
     WritableMap params = Arguments.createMap();
-    params.putBoolean("accept", true);
     params.putString("callUUID", uuid);
-//    KeyguardManager mKeyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-//      if (mKeyguardManager.isDeviceLocked()) {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//          mKeyguardManager.requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {
-//            @Override
-//            public void onDismissSucceeded() {
-//              super.onDismissSucceeded();
-//            }
-//          });
-//        }
-//      }
-//    }
     FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationAnswerAction, params);
     stopService(new Intent(this, IncomingCallService.class));
     if (Build.VERSION.SDK_INT >= 21) {
@@ -186,7 +171,6 @@ public class IncomingCallActivity extends AppCompatActivity {
   private void dismissDialing(String action) {
     active=false;
     WritableMap params = Arguments.createMap();
-    params.putBoolean("accept", false);
     params.putString("callUUID", uuid);
     params.putString("endAction",action);
     FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction, params);

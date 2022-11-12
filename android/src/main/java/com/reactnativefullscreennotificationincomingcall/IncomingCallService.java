@@ -6,25 +6,18 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.util.Log;
-import android.view.WindowManager;
-import android.widget.RemoteViews;
+
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -41,15 +34,13 @@ public class IncomingCallService extends Service {
   private Integer timeoutNumber=0;
   private boolean isRegistered = false;
   // you can perform a click only once time
-  private boolean canClick = true;
   private Bundle bundleData;
   private static final String TAG = "FullscreenSevice";
   public int onStartCommand(Intent intent, int flags, int startId) {
     String action = intent.getAction();
     if (action != null) {
       if (action.equals(Constants.ACTION_SHOW_INCOMING_CALL)) {
-        canClick=true;
-        registerBroadcastPressEvent();
+        NotificationReceiverHandler.updateCanClick(true);
         Bundle bundle = intent.getExtras();
         uuid= bundle.getString("uuid");
         if(bundle.containsKey("timeout")){
@@ -82,27 +73,25 @@ public class IncomingCallService extends Service {
     stopSelf();
   }
 
-  private PendingIntent onPressContentIntent(int id, String action) {
-    Intent  buttonIntent= new Intent();
-    buttonIntent.setAction(action);
-    return PendingIntent.getBroadcast(this,id , buttonIntent, PendingIntent.FLAG_IMMUTABLE);
-  }
 
-  private PendingIntent onButtonNotificationClick(int id, String action) {
-    Intent  buttonIntent= new Intent();
-    buttonIntent.setAction(action);
-    return PendingIntent.getBroadcast(this,id , buttonIntent, PendingIntent.FLAG_IMMUTABLE);
+  private PendingIntent onButtonNotificationClick(int id, String action,String eventName) {
+    Intent emptyScreenIntent = new Intent(this, NotificationReceiverActivity.class);
+    emptyScreenIntent.setAction(action);
+    emptyScreenIntent.putExtras(bundleData);
+    emptyScreenIntent.putExtra("eventName",eventName);
+    return PendingIntent.getActivity(this, 0, emptyScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
   }
 
   private Notification buildNotification(Context context, Intent intent) {
-    Intent fullScreenIntent = new Intent(context, IncomingCallActivity.class);
+
+    Intent emptyScreenIntent = new Intent(context, NotificationReceiverActivity.class);
     Bundle bundle = intent.getExtras();
     bundleData=bundle;
-    fullScreenIntent.putExtras(bundle);
+    emptyScreenIntent.putExtras(bundle);
+    emptyScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    emptyScreenIntent.setAction(Constants.onPressNotification);
     String channelId=bundle.getString("channelId");
-    fullScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-    PendingIntent pressNotification= onPressContentIntent(2,Constants.onPressNotification);
+    PendingIntent emptyPendingIntent = PendingIntent.getActivity(context, 0, emptyScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       NotificationChannel notificationChannel=new NotificationChannel(channelId, bundle.getString("channelName"), NotificationManager.IMPORTANCE_HIGH);
@@ -124,16 +113,16 @@ public class IncomingCallService extends Service {
         .setContentText(bundle.getString("info"))
         .setPriority(NotificationCompat.PRIORITY_MAX)
         .setCategory(NotificationCompat.CATEGORY_CALL)
-        .setContentIntent(pressNotification)
+        .setContentIntent(emptyPendingIntent)
         .addAction(
           0,
           bundle.getString("declineText"),
-          onButtonNotificationClick(0,Constants.ACTION_PRESS_DECLINE_CALL)
+          onButtonNotificationClick(0,Constants.ACTION_PRESS_DECLINE_CALL,Constants.RNNotificationEndCallAction)
        )
         .addAction(
             0,
          bundle.getString("answerText"),
-              onButtonNotificationClick(1,Constants.ACTION_PRESS_ANSWER_CALL)
+              onButtonNotificationClick(1,Constants.ACTION_PRESS_ANSWER_CALL,Constants.RNNotificationAnswerAction)
         )
       .setAutoCancel(true)
       .setOngoing(true)
@@ -145,7 +134,7 @@ public class IncomingCallService extends Service {
         // interacts with the notification. Also, if your app targets Android 10
         // or higher, you need to request the USE_FULL_SCREEN_INTENT permission in
         // order for the platform to invoke this notification.
-        .setFullScreenIntent(fullScreenPendingIntent, true);
+        .setFullScreenIntent(emptyPendingIntent, true);
     if(bundle.getString("notificationColor")!=null){
       notificationBuilder.setColor(getColorForResourceName(context,bundle.getString("notificationColor")));
     }
@@ -170,21 +159,6 @@ public class IncomingCallService extends Service {
     Log.d(TAG, "onDestroy service");
     cancelTimer();
     stopForeground(true);
-    unregisterBroadcastPressEvent();
-  }
-  public void registerBroadcastPressEvent() {
-    if (isRegistered) return;
-    IntentFilter filter = new IntentFilter();
-    filter.addAction(Constants.ACTION_PRESS_ANSWER_CALL);
-    filter.addAction(Constants.ACTION_PRESS_DECLINE_CALL);
-    filter.addAction(Constants.onPressNotification);
-    getApplicationContext().registerReceiver(mReceiver, filter);
-    isRegistered = true;
-  }
-  public void unregisterBroadcastPressEvent() {
-    if (!isRegistered) return;
-    getApplicationContext().unregisterReceiver(mReceiver);
-    isRegistered = false;
   }
 
   public  void setTimeOutEndCall(String uuid) {
@@ -210,51 +184,6 @@ public class IncomingCallService extends Service {
     }
   }
 
-  private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      String action = intent.getAction();
-      if (action != null) {
-        if (action.equals(Constants.onPressNotification)) {
-          if(!canClick)return;
-          Log.d(TAG, "11231231231 ");
-          Bundle bundle = bundleData;
-          Intent newIntent = new Intent(getApplicationContext(), IncomingCallActivity.class);
-          newIntent.putExtras(bundle);
-          newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          getApplicationContext().startActivity(newIntent);
-        }
-        else if (action.equals(Constants.ACTION_PRESS_ANSWER_CALL)) {
-          if(!canClick)return;
-          canClick=false;
-          cancelTimer();
-          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S)  {
-            Intent it = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-            context.sendBroadcast(it);
-          }
-          if (IncomingCallActivity.active) {
-            IncomingCallActivity.getInstance().destroyActivity(false);
-          }
-          WritableMap params = Arguments.createMap();
-          params.putString("callUUID", uuid);
-          FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationAnswerAction,params);
-          stopForeground(true);
-        }else if(action.equals(Constants.ACTION_PRESS_DECLINE_CALL)){
-          if(!canClick)return;
-          canClick=false;
-          cancelTimer();
-          if (IncomingCallActivity.active) {
-            IncomingCallActivity.getInstance().destroyActivity(false);
-          }
-            WritableMap params = Arguments.createMap();
-            params.putString("callUUID", uuid);
-            params.putString("endAction", Constants.ACTION_REJECTED_CALL);
-          FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction,params);
-          stopForeground(true);
-        }
-      }
-    }
-  };
   private int getResourceIdForResourceName(Context context, String resourceName) {
     int resourceId = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
     if (resourceId == 0) {
