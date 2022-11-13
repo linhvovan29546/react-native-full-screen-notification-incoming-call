@@ -78,6 +78,29 @@ public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJa
         return reactContext.getApplicationContext();
     }
 
+    public Activity getCurrentReactActivity() {
+      return this.reactContext.getCurrentActivity();
+    }
+
+    @ReactMethod
+      public void backToApp() {
+        Context context = getAppContext();
+        if (context == null) {
+          return;
+        }
+        String packageName = context.getApplicationContext().getPackageName();
+        Intent focusIntent = context.getPackageManager().getLaunchIntentForPackage(packageName).cloneFilter();
+        Activity activity = getCurrentReactActivity();
+        boolean isOpened = activity != null;
+        if (!isOpened) {
+          focusIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK +
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED +
+            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD +
+            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+          getReactApplicationContext().startActivity(focusIntent);
+        }
+      }
+
         @ReactMethod
     public void addListener(String eventName) {
       // Keep: Required for RN built in Event Emitter Calls.

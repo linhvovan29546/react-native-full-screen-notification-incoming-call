@@ -36,6 +36,12 @@ class RNNotificationCall {
     RNNotificationIncomingCall.hideNotification()
   }
 
+  //function only work when open app from quit state
+  backToApp = () => {
+    if (!isAndroid) return
+    RNNotificationIncomingCall.backToApp()
+  }
+
   addEventListener = (type: any, handler: any) => {
     if (!isAndroid) return
     let listener;

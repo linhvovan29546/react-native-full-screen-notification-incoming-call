@@ -9,6 +9,7 @@ export default function App() {
 
     RNNotificationCall.addEventListener("answer", (payload) => {
       console.log('press answer', payload.callUUID)
+      RNNotificationCall.backToApp()
     })
     RNNotificationCall.addEventListener("endCall", (payload) => {
       console.log('press endCall', payload.callUUID)
@@ -48,7 +49,7 @@ export default function App() {
       )
       // Cancel the timeout if necessary
       BackgroundTimer.clearTimeout(timeoutId);
-    }, 1000);
+    }, 3000);
 
     //rest of code will be performing for iOS on background too
 

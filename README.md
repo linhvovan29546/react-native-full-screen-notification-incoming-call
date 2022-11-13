@@ -156,6 +156,7 @@ import RNNotificationCall from "react-native-full-screen-notification-incoming-c
 #### answer event 
 ```js
       RNNotificationCall.addEventListener("answer", (payload) => {
+      RNNotificationCall.backToApp()
       const {callUUID}=payload
       console.log('press answer',callUUID)
     })
@@ -174,6 +175,10 @@ import RNNotificationCall from "react-native-full-screen-notification-incoming-c
     RNNotificationCall.removeEventListener("answer")
     RNNotificationCall.removeEventListener("endCall")
 
+```
+#### open app from quit state
+```js
+    RNNotificationCall.backToApp()
 ```
 
 ## Contributing
