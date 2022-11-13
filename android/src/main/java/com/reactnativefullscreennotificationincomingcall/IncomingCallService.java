@@ -80,7 +80,7 @@ public class IncomingCallService extends Service {
     if(action == Constants.ACTION_PRESS_DECLINE_CALL){
       Intent  buttonIntent= new Intent();
       buttonIntent.setAction(action);
-      return PendingIntent.getBroadcast(this,id , buttonIntent, PendingIntent.FLAG_IMMUTABLE);
+      return PendingIntent.getBroadcast(this,id , buttonIntent,PendingIntent.FLAG_UPDATE_CURRENT  | PendingIntent.FLAG_IMMUTABLE);
     }
     Intent emptyScreenIntent = new Intent(this, NotificationReceiverActivity.class);
     emptyScreenIntent.setAction(action);
@@ -166,6 +166,7 @@ public class IncomingCallService extends Service {
     Log.d(TAG, "onDestroy service");
     cancelTimer();
     stopForeground(true);
+    unregisterBroadcastPressEvent();
   }
 
   public void registerBroadcastPressEvent() {

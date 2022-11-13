@@ -37,7 +37,7 @@ public class NotificationReceiverHandler {
     switch (action) {
       case Constants.onPressNotification:
         if(!openedInComing) return;
-        canClick=false;
+        openedInComing=false;
         handleNotificationPressIntent(context, intent);
         break;
       case Constants.ACTION_PRESS_ANSWER_CALL:
