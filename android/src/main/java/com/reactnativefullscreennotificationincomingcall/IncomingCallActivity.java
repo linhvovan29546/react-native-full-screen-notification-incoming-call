@@ -161,6 +161,7 @@ public class IncomingCallActivity extends AppCompatActivity {
     params.putString("callUUID", uuid);
     FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationAnswerAction, params);
     stopService(new Intent(this, IncomingCallService.class));
+
     if (Build.VERSION.SDK_INT >= 21) {
       finishAndRemoveTask();
     } else {
