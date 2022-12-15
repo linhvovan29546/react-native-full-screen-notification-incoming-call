@@ -127,7 +127,8 @@ import RNNotificationCall from "react-native-full-screen-notification-incoming-c
         notificationBody: "Incoming video call",
         answerText: "Answer",
         declineText: "Decline",
-        notificationColor:"colorAccent"
+        notificationColor:"colorAccent",
+        notificationSound: 'skype_ring'//raw 
       }
     )
 ```
@@ -145,7 +146,8 @@ import RNNotificationCall from "react-native-full-screen-notification-incoming-c
     - `notificationBody`: string (required) body of notification
     - `answerText`: string (required) answer button label
     - `declineText`: string (required) decline button label
-    - `notificationColor`: string (optinal) color of notification 
+    - `notificationColor`: string (optional) color of notification 
+    - `notificationSound`: raw file (optional) sound of notification
 
 #### hide notification
 
