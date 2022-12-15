@@ -6,12 +6,14 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +28,8 @@ import androidx.core.content.ContextCompat;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
+
+import java.io.File;
 
 
 public class IncomingCallService extends Service {
@@ -99,10 +103,15 @@ public class IncomingCallService extends Service {
     emptyScreenIntent.setAction(Constants.onPressNotification);
     String channelId=bundle.getString("channelId");
     PendingIntent emptyPendingIntent = PendingIntent.getActivity(context, 0, emptyScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    String customSound=bundle.getString("notificationSound");
+    Uri sound=RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE);
+    if(customSound != null){
+           sound= Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + File.pathSeparator + File.separator + File.separator + getPackageName() + "/raw/" + customSound);
+    }
     NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       NotificationChannel notificationChannel=new NotificationChannel(channelId, bundle.getString("channelName"), NotificationManager.IMPORTANCE_HIGH);
-      notificationChannel.setSound(RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE),
+        notificationChannel.setSound(sound,
         new AudioAttributes.Builder()
           .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
           .setUsage(AudioAttributes.USAGE_NOTIFICATION)
@@ -135,7 +144,7 @@ public class IncomingCallService extends Service {
       .setOngoing(true)
       .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
       .setVibrate(new long[] { 0, 1000, 800})
-      .setSound(RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE))
+      .setSound(sound)
         // Use a full-screen intent only for the highest-priority alerts where you
         // have an associated activity that you would like to launch after the user
         // interacts with the notification. Also, if your app targets Android 10
@@ -213,6 +222,7 @@ public class IncomingCallService extends Service {
     }
     return resourceId;
   }
+
   private int getColorForResourceName(Context context, String colorPath){
     // java
     Resources res = context.getResources();

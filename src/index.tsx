@@ -11,14 +11,15 @@ enum RNNotificationEvent {
 }
 
 interface foregroundOptionsModel {
-  channelId: string,
-  channelName: string,
-  notificationIcon: string,//mipmap
-  notificationTitle: string,
-  notificationBody: string,
-  answerText: string,
-  declineText: string,
-  notificationColor?: string
+  channelId: string;
+  channelName: string;
+  notificationIcon: string;//mipmap
+  notificationTitle: string;
+  notificationBody: string;
+  answerText: string;
+  declineText: string;
+  notificationColor?: string;
+  notificationSound?: string//raw
 }
 class RNNotificationCall {
   private _notificationEventHandlers;

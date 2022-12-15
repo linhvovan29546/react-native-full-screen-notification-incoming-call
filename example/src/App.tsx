@@ -44,12 +44,13 @@ export default function App() {
           notificationBody: "Incoming video call",
           answerText: "Answer",
           declineText: "Decline",
-          notificationColor: 'colorAccent'//path color in android
+          notificationColor: 'colorAccent',//path color in android
+          notificationSound: 'skype_ring'//raw 
         }
       )
       // Cancel the timeout if necessary
       BackgroundTimer.clearTimeout(timeoutId);
-    }, 3000);
+    }, 0);
 
     //rest of code will be performing for iOS on background too
 
