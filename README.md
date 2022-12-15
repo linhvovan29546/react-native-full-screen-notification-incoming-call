@@ -149,7 +149,7 @@ import RNNotificationCall from "react-native-full-screen-notification-incoming-c
     - `declineText`: string (required) decline button label
     - `notificationColor`: string (optional) color of notification 
     - `notificationSound`: raw file (optional) sound of notification
-    - `mainComponent`:string appKey when custom incomingcall screen 
+    - `mainComponent`:string appKey (optional) to the custom incoming call screen. To understand the details you can check the [example](https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/blob/master/example/index.tsx)
     - `payload`:any(optional) pass whatever data you want to get when custom incomingcall screen
 
 #### hide notification
