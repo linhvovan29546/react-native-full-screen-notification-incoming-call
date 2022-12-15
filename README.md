@@ -128,7 +128,8 @@ import RNNotificationCall from "react-native-full-screen-notification-incoming-c
         answerText: "Answer",
         declineText: "Decline",
         notificationColor:"colorAccent",
-        notificationSound: 'skype_ring'//raw 
+        notificationSound: 'skype_ring',//raw 
+        mainComponent:'MyReactNativeApp'//AppRegistry.registerComponent('MyReactNativeApp', () => CustomIncomingCall);
       }
     )
 ```
@@ -148,6 +149,8 @@ import RNNotificationCall from "react-native-full-screen-notification-incoming-c
     - `declineText`: string (required) decline button label
     - `notificationColor`: string (optional) color of notification 
     - `notificationSound`: raw file (optional) sound of notification
+    - `mainComponent`:string appKey when custom incomingcall screen 
+    - `payload`:any(optional) pass whatever data you want to get when custom incomingcall screen
 
 #### hide notification
 
@@ -181,6 +184,14 @@ import RNNotificationCall from "react-native-full-screen-notification-incoming-c
 #### open app from quit state
 ```js
     RNNotificationCall.backToApp()
+```
+#### decline call
+```js
+     RNNotificationCall.declineCall(uuid)
+```
+#### answer call
+```js
+     RNNotificationCall.answerCall(uuid)
 ```
 
 #### Known issue

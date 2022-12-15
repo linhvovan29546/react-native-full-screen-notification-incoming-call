@@ -1,6 +1,6 @@
 package com.reactnativefullscreennotificationincomingcall;
 
-import android.app.Activity;
+
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -14,12 +14,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.airbnb.lottie.LottieAnimationView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
+import com.facebook.react.ReactFragment;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.squareup.picasso.Picasso;
 
-public class IncomingCallActivity extends AppCompatActivity {
+public class IncomingCallActivity extends AppCompatActivity implements DefaultHardwareBackBtnHandler {
+
   private static final String TAG = "MessagingService";
   private static final String TAG_KEYGUARD = "Incoming:unLock";
   private TextView tvName;
@@ -72,13 +76,31 @@ public class IncomingCallActivity extends AppCompatActivity {
         keyguardLock.disableKeyguard();
       }
     }
-    setContentView(R.layout.activity_call_incoming);
     getWindow().addFlags(
       WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
         | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
         | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
         | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
         | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+    Bundle bundle = getIntent().getExtras();
+
+    if (bundle.containsKey("mainComponent")) {
+      setContentView(R.layout.custom_ingcoming_call_rn);
+       Fragment reactNativeFragment = new ReactFragment.Builder()
+      .setComponentName(bundle.getString("mainComponent"))
+         .setLaunchOptions(bundle)
+      .build();
+    getSupportFragmentManager()
+      .beginTransaction()
+      .add(R.id.reactNativeFragment, reactNativeFragment)
+      .commit();
+      if (bundle.containsKey("uuid")) {
+        uuid = bundle.getString("uuid");
+      }
+    return;
+    }else{
+      setContentView(R.layout.activity_call_incoming);
+    }
     tvName = findViewById(R.id.tvName);
     tvInfo = findViewById(R.id.tvInfo);
     ivAvatar = findViewById(R.id.ivAvatar);
@@ -86,7 +108,6 @@ public class IncomingCallActivity extends AppCompatActivity {
     tvAccept=findViewById(R.id.tvAccept);
     lnDeclineCall = findViewById(R.id.lnDeclineCall);
     lnAcceptCall = findViewById(R.id.lnAcceptCall);
-    Bundle bundle = getIntent().getExtras();
     if (bundle != null) {
       if (bundle.containsKey("uuid")) {
         uuid = bundle.getString("uuid");
@@ -183,4 +204,8 @@ public class IncomingCallActivity extends AppCompatActivity {
     }
   }
 
+  @Override
+  public void invokeDefaultOnBackPressed() {
+    super.onBackPressed();
+  }
 }
