@@ -56,6 +56,8 @@ public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJa
       intent.putExtra("declineText",foregroundOptions.getString("declineText"));
       intent.putExtra("notificationColor",foregroundOptions.getString("notificationColor"));
       intent.putExtra("notificationSound",foregroundOptions.getString("notificationSound"));
+      intent.putExtra("mainComponent",foregroundOptions.getString("mainComponent"));
+      intent.putExtra("payload",foregroundOptions.getString("payload"));
       intent.setAction(Constants.ACTION_SHOW_INCOMING_CALL);
       getReactApplicationContext().startService(intent);
     }
