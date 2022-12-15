@@ -1,4 +1,4 @@
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import { DeviceEventEmitter, NativeEventEmitter, NativeModules, Platform } from 'react-native';
 const isAndroid = Platform.OS === 'android';
 const RNNotificationIncomingCall = NativeModules.FullScreenNotificationIncomingCall;
 let eventEmitter: any
@@ -8,6 +8,16 @@ if (isAndroid) {
 enum RNNotificationEvent {
   RNNotificationAnswerAction = 'RNNotificationAnswerAction',
   RNNotificationEndCallAction = 'RNNotificationEndCallAction'
+}
+enum CallAction {
+  ACTION_END_CALL = "ACTION_END_CALL",
+  ACTION_REJECTED_CALL = "ACTION_REJECTED_CALL",
+  ACTION_HIDE_CALL = "ACTION_HIDE_CALL",
+  ACTION_SHOW_INCOMING_CALL = "ACTION_SHOW_INCOMING_CALL",
+  HIDE_NOTIFICATION_INCOMING_CALL = "HIDE_NOTIFICATION_INCOMING_CALL",
+  ACTION_PRESS_ANSWER_CALL = "ACTION_PRESS_ANSWER_CALL",
+  ACTION_PRESS_DECLINE_CALL = "ACTION_PRESS_DECLINE_CALL",
+  ACTION_START_ACTIVITY = "ACTION_START_ACTIVITY",
 }
 
 interface foregroundOptionsModel {
@@ -19,7 +29,15 @@ interface foregroundOptionsModel {
   answerText: string;
   declineText: string;
   notificationColor?: string;
-  notificationSound?: string//raw
+  notificationSound?: string;//raw
+  mainComponent?: string;
+  payload?: any//more info
+}
+export interface customIncomingActivityProps {
+  avatar?: string;
+  info?: string;
+  uuid: string;
+  payload?: any
 }
 class RNNotificationCall {
   private _notificationEventHandlers;
@@ -77,6 +95,19 @@ class RNNotificationCall {
     listener.remove();
     this._notificationEventHandlers.delete(type);
   };
+  declineCall = (uuid: string) => {
+    this.hideNotification()
+    const payload = {
+      callUUID: uuid,
+      endAction: CallAction.ACTION_REJECTED_CALL
+    }
+    DeviceEventEmitter.emit(RNNotificationEvent.RNNotificationEndCallAction, payload)
+  }
+  answerCall = (uuid: string) => {
+    this.hideNotification()
+    const payload = { callUUID: uuid }
+    DeviceEventEmitter.emit(RNNotificationEvent.RNNotificationAnswerAction, payload)
+  }
 }
 
 export default new RNNotificationCall();

@@ -45,7 +45,8 @@ export default function App() {
           answerText: "Answer",
           declineText: "Decline",
           notificationColor: 'colorAccent',//path color in android
-          notificationSound: 'skype_ring'//raw 
+          notificationSound: 'skype_ring',//raw 
+          mainComponent: "MyReactNativeApp"
         }
       )
       // Cancel the timeout if necessary
