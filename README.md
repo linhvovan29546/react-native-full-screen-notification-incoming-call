@@ -180,7 +180,7 @@ import RNNotificationCall from "react-native-full-screen-notification-incoming-c
     RNNotificationCall.removeEventListener("endCall")
 
 ```
-#### open app from quit state
+#### open app from quit state (only work on quit state)
 ```js
     RNNotificationCall.backToApp()
 ```
