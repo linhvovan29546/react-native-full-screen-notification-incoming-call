@@ -194,7 +194,7 @@ import RNNotificationCall from "react-native-full-screen-notification-incoming-c
      RNNotificationCall.answerCall(uuid)
 ```
 
-#### Known issue
+#### Troubleshooting
 - Custom Android notification sound :
   - Since Android Oreo / 8 the Notificationsound is coming from the Channel and can only be set the first time you add the channel via your channel.setSound(). If you want to change it later on you need to delete the channel and then re-add it to the system.
 ## Contributing
