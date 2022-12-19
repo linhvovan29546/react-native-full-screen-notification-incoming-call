@@ -19,7 +19,6 @@ For more information about **Display time-sensitive notifications** (https://dev
     >
   </kbd>
   <br>
-  <em>FastImage example app.</em>
 </p>
 
 # react-native-full-screen-notification-incoming-call
