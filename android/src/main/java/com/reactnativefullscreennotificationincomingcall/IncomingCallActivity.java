@@ -139,14 +139,7 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
     lnAcceptCall.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        try {
           acceptDialing();
-        } catch (Exception e) {
-          WritableMap params = Arguments.createMap();
-          params.putString("message", e.getMessage());
-          FullScreenNotificationIncomingCallModule.sendEventToJs("error", params);
-          dismissDialing(Constants.ACTION_END_CALL);
-        }
       }
     });
 
@@ -179,6 +172,10 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
   private void acceptDialing() {
     active=false;
     WritableMap params = Arguments.createMap();
+    Bundle bundle = getIntent().getExtras();
+    if(bundle.containsKey("payload")){
+      params.putString("payload",bundle.getString("payload"));
+    }
     params.putString("callUUID", uuid);
     FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationAnswerAction, params);
     stopService(new Intent(this, IncomingCallService.class));
@@ -193,6 +190,10 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
   private void dismissDialing(String action) {
     active=false;
     WritableMap params = Arguments.createMap();
+    Bundle bundle = getIntent().getExtras();
+    if(bundle.containsKey("payload")){
+      params.putString("payload",bundle.getString("payload"));
+    }
     params.putString("callUUID", uuid);
     params.putString("endAction",action);
     FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction, params);

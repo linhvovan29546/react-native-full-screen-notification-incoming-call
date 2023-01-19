@@ -4,16 +4,18 @@ import type { customIncomingActivityProps } from 'react-native-full-screen-notif
 import RNNotificationCall from '../../../src/index'
 export default function CustomIncomingCall(props: customIncomingActivityProps) {
   console.log('props===', props)
+  const payload= JSON.parse(props.payload)
+  console.log("payload",payload)
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.box} onPress={() => {
-        RNNotificationCall.declineCall(props.uuid)
+        RNNotificationCall.declineCall(props.uuid,props.payload)
       }}>
         <Text>Decline</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.box}
         onPress={() => {
-          RNNotificationCall.answerCall(props.uuid)
+          RNNotificationCall.answerCall(props.uuid,props.payload)
         }}
       >
         <Text>Answer</Text>
