@@ -20,7 +20,7 @@ enum CallAction {
   ACTION_START_ACTIVITY = "ACTION_START_ACTIVITY",
 }
 
-export interface foregroundOptionsModel {
+interface foregroundOptionsModel {
   channelId: string;
   channelName: string;
   notificationIcon: string;//mipmap
@@ -31,22 +31,13 @@ export interface foregroundOptionsModel {
   notificationColor?: string;
   notificationSound?: string;//raw
   mainComponent?: string;
-  payload?:any//more info
+  payload?: any//more info
 }
 export interface customIncomingActivityProps {
   avatar?: string;
   info?: string;
   uuid: string;
   payload?: any
-}
-export interface answerPayload{
-  callUUID:string;
-  payload?:string; // jsonString
-}
-export interface declinePayload{
-  callUUID:string;
-  payload?:string; // jsonString
-  endAction:"ACTION_REJECTED_CALL"|"ACTION_HIDE_CALL"; //ACTION_REJECTED_CALL => press button decline or call function declineCall
 }
 class RNNotificationCall {
   private _notificationEventHandlers;
@@ -70,20 +61,20 @@ class RNNotificationCall {
     RNNotificationIncomingCall.backToApp()
   }
 
-  addEventListener = (type: string, handler: any) => {
+  addEventListener = (type: any, handler: any) => {
     if (!isAndroid) return
     let listener;
     if (type === 'answer') {
       listener = eventEmitter.addListener(
         RNNotificationEvent.RNNotificationAnswerAction,
-        (eventPayload: answerPayload) => {
+        (eventPayload: any) => {
           handler(eventPayload);
         }
       );
     } else if (type === 'endCall') {
       listener = eventEmitter.addListener(
         RNNotificationEvent.RNNotificationEndCallAction,
-        (eventPayload: declinePayload) => {
+        (eventPayload: any) => {
           handler(eventPayload);
         }
       );
@@ -104,19 +95,18 @@ class RNNotificationCall {
     listener.remove();
     this._notificationEventHandlers.delete(type);
   };
-  declineCall = (uuid: string ,payload?:string) => {
+  declineCall = (uuid: string) => {
     this.hideNotification()
-    const data = {
+    const payload = {
       callUUID: uuid,
-      endAction: CallAction.ACTION_REJECTED_CALL,
-      payload
+      endAction: CallAction.ACTION_REJECTED_CALL
     }
-    DeviceEventEmitter.emit(RNNotificationEvent.RNNotificationEndCallAction, data)
+    DeviceEventEmitter.emit(RNNotificationEvent.RNNotificationEndCallAction, payload)
   }
-  answerCall = (uuid: string ,payload?:string) => {
+  answerCall = (uuid: string) => {
     this.hideNotification()
-    const data = { callUUID: uuid,payload }
-    DeviceEventEmitter.emit(RNNotificationEvent.RNNotificationAnswerAction, data)
+    const payload = { callUUID: uuid }
+    DeviceEventEmitter.emit(RNNotificationEvent.RNNotificationAnswerAction, payload)
   }
 }
 

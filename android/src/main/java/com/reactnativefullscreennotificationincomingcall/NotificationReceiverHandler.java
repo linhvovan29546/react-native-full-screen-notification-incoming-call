@@ -67,9 +67,6 @@ public class NotificationReceiverHandler {
       IncomingCallActivity.getInstance().destroyActivity(false);
     }
     WritableMap params = Arguments.createMap();
-    if(bundle.containsKey("payload")){
-      params.putString("payload",bundle.getString("payload"));
-    }
     params.putBoolean("accept", true);
     params.putString("callUUID", uuid);
     FullScreenNotificationIncomingCallModule.sendEventToJs(eventName, params);

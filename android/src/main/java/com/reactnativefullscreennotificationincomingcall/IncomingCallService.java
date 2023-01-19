@@ -200,9 +200,6 @@ public class IncomingCallService extends Service {
             IncomingCallActivity.getInstance().destroyActivity(false);
           }
             WritableMap params = Arguments.createMap();
-          if(bundleData.containsKey("payload")){
-            params.putString("payload",bundleData.getString("payload"));
-          }
             params.putString("callUUID", uuid);
             params.putString("endAction",Constants.ACTION_HIDE_CALL);
             FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction,params);
@@ -251,9 +248,6 @@ public class IncomingCallService extends Service {
             IncomingCallActivity.getInstance().destroyActivity(false);
           }
           WritableMap params = Arguments.createMap();
-          if(bundleData.containsKey("payload")){
-            params.putString("payload",bundleData.getString("payload"));
-          }
           params.putString("callUUID", uuid);
           params.putString("endAction", Constants.ACTION_REJECTED_CALL);
           FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction,params);
