@@ -243,7 +243,7 @@ function declineCall(uuid: string, payload?: string): void;
 
 ```js
 // Example
-RNNotificationCall.declineCall(uuid, payload);
+RNNotificationCall.declineCall(22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad, JSON.stringify({name:'Test',Body:'test'}));
 ```
 
 #### answer call
@@ -255,7 +255,7 @@ function answerCall(uuid: string, payload?: string): void;
 
 ```js
 // Example
-RNNotificationCall.answerCall(uuid, payload);
+RNNotificationCall.answerCall(22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad, JSON.stringify({name:'Test',Body:'test'}));
 ```
 
 #### Troubleshooting
