@@ -1,5 +1,5 @@
 import * as React from 'react';
-import RNNotificationCall from '../../../src/index'
+import RNNotificationCall, { answerPayload, declinePayload } from '../../../src/index';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import ramdomUuid from 'uuid-random';
 import BackgroundTimer from 'react-native-background-timer';
@@ -8,21 +8,20 @@ import { useNavigation } from '@react-navigation/native';
 export default function Home() {
   const navigation = useNavigation();
   React.useEffect(() => {
-
-    RNNotificationCall.addEventListener("answer", (payload) => {
-      console.log('press answer', payload.callUUID)
-      RNNotificationCall.backToApp()
-    })
-    RNNotificationCall.addEventListener("endCall", (payload) => {
-      console.log('press endCall', payload.callUUID)
-    })
+    RNNotificationCall.addEventListener('answer', (data:answerPayload) => {
+      const {callUUID,payload}=data
+      console.log('press answer', data);
+      RNNotificationCall.backToApp();
+    });
+    RNNotificationCall.addEventListener('endCall', (data:declinePayload) => {
+      const {callUUID,endAction,payload}=data
+      console.log('press endCall', data);
+    });
 
     return () => {
-      RNNotificationCall.removeEventListener("answer")
-      RNNotificationCall.removeEventListener("endCall")
+      RNNotificationCall.removeEventListener('answer');
+      RNNotificationCall.removeEventListener('endCall');
     };
-
-
   }, []);
   const getCurrentCallId = () => {
     return ramdomUuid().toLowerCase();
@@ -32,55 +31,53 @@ export default function Home() {
     const timeoutId = BackgroundTimer.setTimeout(() => {
       // this will be executed once after 10 seconds
       // even when app is the the background
-      const uid = getCurrentCallId()
-      console.log('uid', uid)
-      RNNotificationCall.displayNotification(
-        uid,
-        null,
-        30000,
-        {
-          channelId: "com.abc.incomingcall",
-          channelName: "Incoming video call",
-          notificationIcon: "ic_launcher",//mipmap
-          notificationTitle: "Linh Vo",
-          notificationBody: "Incoming video call",
-          answerText: "Answer",
-          declineText: "Decline",
-          notificationColor: 'colorAccent',//path color in android
-          notificationSound: 'skype_ring',//raw 
-          mainComponent: "MyReactNativeApp"
-        }
-      )
+      const uid = getCurrentCallId();
+      console.log('uid', uid);
+      RNNotificationCall.displayNotification(uid, null, 30000, {
+        channelId: 'com.abc.incomingcall',
+        channelName: 'Incoming video call',
+        notificationIcon: 'ic_launcher', //mipmap
+        notificationTitle: 'Linh Vo',
+        notificationBody: 'Incoming video call',
+        answerText: 'Answer',
+        declineText: 'Decline',
+        notificationColor: 'colorAccent', //path color in android
+        // notificationSound: 'skype_ring', //raw
+        mainComponent: 'MyReactNativeApp',
+        payload: {
+          kiokas: 'ádada',
+          ssskis: 'awq',
+        },
+      });
       // Cancel the timeout if necessary
       BackgroundTimer.clearTimeout(timeoutId);
-    }, 5000);
+    }, 0);
 
     //rest of code will be performing for iOS on background too
-
-  }
+  };
   const onHide = () => {
-    RNNotificationCall.hideNotification()
-  }
+    RNNotificationCall.hideNotification();
+  };
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={{
           backgroundColor: 'red',
           padding: 15,
-          borderRadius: 15
+          borderRadius: 15,
         }}
-        onPress={() =>
-          navigation.navigate('Detail')
-        }>
+        onPress={() => navigation.navigate('Detail')}
+      >
         <Text>Go to detail</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={{
           backgroundColor: 'red',
           padding: 15,
-          borderRadius: 15
+          borderRadius: 15,
         }}
-        onPress={display}>
+        onPress={display}
+      >
         <Text>Display</Text>
       </TouchableOpacity>
 
@@ -89,9 +86,10 @@ export default function Home() {
           backgroundColor: 'red',
           padding: 15,
           borderRadius: 15,
-          marginTop: 15
+          marginTop: 15,
         }}
-        onPress={onHide}>
+        onPress={onHide}
+      >
         <Text>Hide</Text>
       </TouchableOpacity>
     </View>
