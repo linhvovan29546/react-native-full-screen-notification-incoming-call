@@ -1,5 +1,6 @@
 **React Native Full Screen Notification Incoming Call For Android** This library works based on android display time-sensitive notifications
-For more information about **Display time-sensitive notifications** (https://developer.android.com/training/notify-user/time-sensitive)
+For more information about **Display time-sensitive notifications** (https://developer.android.com/training/notify-user/time-sensitive).
+
 ⚠️ **This library only work for Android** .
 
 # Screenshot
