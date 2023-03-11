@@ -154,7 +154,7 @@ RNNotificationCall.displayNotification(
     answerText: 'Answer',
     declineText: 'Decline',
     notificationColor: 'colorAccent',
-    // notificationSound: 'skype_ring', //raw
+    notificationSound: null, //raw
     //mainComponent:'MyReactNativeApp',//AppRegistry.registerComponent('MyReactNativeApp', () => CustomIncomingCall);
     // payload:{name:'Test',Body:'test'}
   }

@@ -108,6 +108,9 @@ public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJa
             WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD +
             WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
           getReactApplicationContext().startActivity(focusIntent);
+        }else{
+            focusIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            activity.startActivity(focusIntent);
         }
       }
 
