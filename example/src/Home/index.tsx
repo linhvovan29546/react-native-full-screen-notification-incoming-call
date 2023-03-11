@@ -1,5 +1,8 @@
 import * as React from 'react';
-import RNNotificationCall, { answerPayload, declinePayload } from '../../../src/index';
+import RNNotificationCall, {
+  answerPayload,
+  declinePayload,
+} from '../../../src/index';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import ramdomUuid from 'uuid-random';
 import BackgroundTimer from 'react-native-background-timer';
@@ -8,13 +11,13 @@ import { useNavigation } from '@react-navigation/native';
 export default function Home() {
   const navigation = useNavigation();
   React.useEffect(() => {
-    RNNotificationCall.addEventListener('answer', (data:answerPayload) => {
-      const {callUUID,payload}=data
+    RNNotificationCall.addEventListener('answer', (data: answerPayload) => {
+      const { callUUID, payload } = data;
       console.log('press answer', data);
       RNNotificationCall.backToApp();
     });
-    RNNotificationCall.addEventListener('endCall', (data:declinePayload) => {
-      const {callUUID,endAction,payload}=data
+    RNNotificationCall.addEventListener('endCall', (data: declinePayload) => {
+      const { callUUID, endAction, payload } = data;
       console.log('press endCall', data);
     });
 
@@ -42,7 +45,7 @@ export default function Home() {
         answerText: 'Answer',
         declineText: 'Decline',
         notificationColor: 'colorAccent', //path color in android
-        // notificationSound: 'skype_ring', //raw
+        notificationSound: undefined, //raw
         mainComponent: 'MyReactNativeApp',
         payload: {
           kiokas: 'ádada',
