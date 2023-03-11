@@ -225,7 +225,7 @@ RNNotificationCall.removeEventListener('answer');
 RNNotificationCall.removeEventListener('endCall');
 ```
 
-#### open app from quit state (only work on quit state)
+#### back to app
 
 ```ts
 function backToApp(): void;
@@ -262,8 +262,10 @@ RNNotificationCall.answerCall(22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad, JSON.stringi
 
 #### Troubleshooting
 
-- Custom Android notification sound :
+- Custom Android notification sound:
   - Since Android Oreo / 8 the Notificationsound is coming from the Channel and can only be set the first time you add the channel via your channel.setSound(). If you want to change it later on you need to delete the channel and then re-add it to the system.
+  
+- Android target 31 or higher:  android.app.BackgroundServiceStartNotAllowedException: Not allowed to start service Intent (android.app.BackgroundServiceStartNotAllowedException: Not allowed to start service Intent)
 
 ## Contributing
 
