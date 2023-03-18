@@ -30,7 +30,13 @@ For more information about **Display time-sensitive notifications** (https://dev
 Android full screen notification incoming call for React Native
 
 ## Installation
+## React Native Compatibility
+To use this library you need to ensure you match up with the correct version of React Native you are using.
 
+ | lib version                          | React Native Version |
+| ------------------------------------- | ----------------------------- |
+| `react-native-full-screen-notification-incoming-call` `>= 0.1.8`   | `  >=  0.61.0`                  |
+| `react-native-full-screen-notification-incoming-call` `<= 0.1.7`  | ` < 0.61.0`                     |
 ```sh
 npm install react-native-full-screen-notification-incoming-call
 
