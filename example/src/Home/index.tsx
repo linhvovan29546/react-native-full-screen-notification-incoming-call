@@ -7,56 +7,17 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import ramdomUuid from 'uuid-random';
 import BackgroundTimer from 'react-native-background-timer';
 import { useNavigation } from '@react-navigation/native';
-
+import { CallKeepService } from '../services/CallKeepService';
+import RNCallKeep from 'react-native-callkeep';
+CallKeepService.instance().setupCallKeep()
 export default function Home() {
   const navigation = useNavigation();
-  React.useEffect(() => {
-    RNNotificationCall.addEventListener('answer', (data: answerPayload) => {
-      const { callUUID, payload } = data;
-      console.log('press answer', data);
-      RNNotificationCall.backToApp();
-    });
-    RNNotificationCall.addEventListener('endCall', (data: declinePayload) => {
-      const { callUUID, endAction, payload } = data;
-      console.log('press endCall', data);
-    });
-
-    return () => {
-      RNNotificationCall.removeEventListener('answer');
-      RNNotificationCall.removeEventListener('endCall');
-    };
-  }, []);
-  const getCurrentCallId = () => {
-    return ramdomUuid().toLowerCase();
-  };
+  CallKeepService.navigation = navigation
   const display = () => {
     // Start a timer that runs once after X milliseconds
-    const timeoutId = BackgroundTimer.setTimeout(() => {
-      // this will be executed once after 10 seconds
-      // even when app is the the background
-      const uid = getCurrentCallId();
-      console.log('uid', uid);
-      RNNotificationCall.displayNotification(uid, null, 30000, {
-        channelId: 'com.abc.incomingcall',
-        channelName: 'Incoming video call',
-        notificationIcon: 'ic_launcher', //mipmap
-        notificationTitle: 'Linh Vo',
-        notificationBody: 'Incoming video call',
-        answerText: 'Answer',
-        declineText: 'Decline',
-        notificationColor: 'colorAccent', //path color in android
-        notificationSound: undefined, //raw
-        mainComponent: 'MyReactNativeApp',
-        payload: {
-          kiokas: 'ádada',
-          ssskis: 'awq',
-        },
-      });
-      // Cancel the timeout if necessary
-      BackgroundTimer.clearTimeout(timeoutId);
-    }, 0);
-
     //rest of code will be performing for iOS on background too
+    const uuid = ramdomUuid()
+    CallKeepService.instance().displayCall(uuid)
   };
   const onHide = () => {
     RNNotificationCall.hideNotification();
