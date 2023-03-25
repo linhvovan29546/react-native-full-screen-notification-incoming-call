@@ -83,8 +83,7 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
         | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
         | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
     Bundle bundle = getIntent().getExtras();
-
-    if (bundle.containsKey("mainComponent")) {
+    if (bundle.containsKey("mainComponent") && bundle.getString("mainComponent")!=null) {
       setContentView(R.layout.custom_ingcoming_call_rn);
        Fragment reactNativeFragment = new ReactFragment.Builder()
       .setComponentName(bundle.getString("mainComponent"))
