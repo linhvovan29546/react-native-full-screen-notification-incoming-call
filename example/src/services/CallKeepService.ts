@@ -19,9 +19,10 @@ const answerOption = {
   notificationSound: undefined, //raw
 };
 // this service only focus for Android
+
 export class CallKeepService {
   private static _instance?: CallKeepService;
-  private setupReady?: boolean;
+  static navigation: any;
   constructor() {
     //setup callkeep
     // this.setupCallKeep();
@@ -138,6 +139,8 @@ export class CallKeepService {
     const { callUUID } = answerData;
     // called when the user answer the incoming call
     //navigate to another screen
+    //some project need to rehandle with redux state or other state manager refer https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/issues/17#issuecomment-1318225574
+    CallKeepService.navigation.navigate('Detail');
   }
   onCallKeepEndCallAction(answerData: any) {
     const { callUUID } = answerData;

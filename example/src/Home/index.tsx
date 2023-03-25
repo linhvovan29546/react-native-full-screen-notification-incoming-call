@@ -12,7 +12,7 @@ import RNCallKeep from 'react-native-callkeep';
 CallKeepService.instance().setupCallKeep()
 export default function Home() {
   const navigation = useNavigation();
-
+  CallKeepService.navigation = navigation
   const display = () => {
     // Start a timer that runs once after X milliseconds
     //rest of code will be performing for iOS on background too
