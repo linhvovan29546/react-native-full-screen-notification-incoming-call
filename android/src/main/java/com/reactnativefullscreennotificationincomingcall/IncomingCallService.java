@@ -161,7 +161,9 @@ public class IncomingCallService extends Service {
     if(timeoutNumber > 0){
       setTimeOutEndCall(uuid);
     }
-    return notificationBuilder.build();
+    Notification notification = notificationBuilder.build();
+    notification.flags |= Notification.FLAG_INSISTENT;
+    return notification;
   }
 
   @Override
