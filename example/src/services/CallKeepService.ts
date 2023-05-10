@@ -4,7 +4,13 @@ import RNNotificationCall, {
   declinePayload,
 } from '../../../src/index';
 import RNCallKeep from 'react-native-callkeep';
-import { request, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import {
+  request,
+  check,
+  PERMISSIONS,
+  RESULTS,
+  requestMultiple,
+} from 'react-native-permissions';
 
 const appName = 'Incoming-Test';
 const isAndroid = Platform.OS === 'android';
@@ -42,8 +48,12 @@ export class CallKeepService {
   }
 
   async setupCallKeepFunc() {
-    const granted = await request(PERMISSIONS.ANDROID.READ_PHONE_NUMBERS);
-    if (granted !== RESULTS.GRANTED) return;
+    const granted = await requestMultiple([
+      PERMISSIONS.ANDROID.READ_PHONE_NUMBERS,
+      PERMISSIONS.ANDROID.POST_NOTIFICATIONS,
+    ]);
+    if (granted[PERMISSIONS.ANDROID.READ_PHONE_NUMBERS] !== RESULTS.GRANTED)
+      return;
     //only setup when granted permission
     await this.setup();
     //setup done
@@ -162,5 +172,8 @@ export class CallKeepService {
       true,
       undefined
     );
+  }
+  endAllCall() {
+    RNCallKeep.endAllCalls();
   }
 }
