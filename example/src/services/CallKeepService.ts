@@ -1,11 +1,10 @@
-import { PermissionsAndroid, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import RNNotificationCall, {
-  answerPayload,
-  declinePayload,
+  type answerPayload,
+  type declinePayload,
 } from '../../../src/index';
 import RNCallKeep from 'react-native-callkeep';
 import {
-  request,
   check,
   PERMISSIONS,
   RESULTS,
@@ -106,22 +105,19 @@ export class CallKeepService {
     RNCallKeep.addEventListener('endCall', this.onCallKeepEndCallAction);
     if (isAndroid) {
       //event only on android
-      RNCallKeep.addEventListener(
-        'showIncomingCallUi',
-        ({ handle, callUUID, name }) => {
-          RNNotificationCall.displayNotification(callUUID, null, 30000, {
-            ...answerOption,
-            channelId: 'com.abc.incomingcall',
-            channelName: 'Incoming video call',
-            notificationTitle: 'Linh Vo',
-            notificationBody: 'Incoming video call',
-            payload: {
-              kiokas: 'ádada',
-              ssskis: 'awq',
-            },
-          });
-        }
-      );
+      RNCallKeep.addEventListener('showIncomingCallUi', ({ callUUID }) => {
+        RNNotificationCall.displayNotification(callUUID, null, 30000, {
+          ...answerOption,
+          channelId: 'com.abc.incomingcall',
+          channelName: 'Incoming video call',
+          notificationTitle: 'Linh Vo',
+          notificationBody: 'Incoming video call',
+          payload: {
+            kiokas: 'ádada',
+            ssskis: 'awq',
+          },
+        });
+      });
       // Listen to headless action events
       RNNotificationCall.addEventListener('endCall', (data: declinePayload) => {
         const { callUUID } = data;
@@ -145,15 +141,15 @@ export class CallKeepService {
   }
 
   //handle event
-  onCallKeepAnswerCallAction(answerData: any) {
-    const { callUUID } = answerData;
+  onCallKeepAnswerCallAction() {
+    // const { callUUID } = answerData;
     // called when the user answer the incoming call
     //navigate to another screen
     //some project need to rehandle with redux state or other state manager refer https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/issues/17#issuecomment-1318225574
     CallKeepService.navigation.navigate('Detail');
   }
-  onCallKeepEndCallAction(answerData: any) {
-    const { callUUID } = answerData;
+  onCallKeepEndCallAction() {
+    // const { callUUID } = answerData;
     //end call action of callkit
     //action destroy screen
     //You need to call RNCallKeep.endCall(callUUID) to end call
