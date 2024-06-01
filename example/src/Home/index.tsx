@@ -20,14 +20,17 @@ export default function Home() {
   };
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate('Detail')}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('Detail')}
+        style={styles.button}
+      >
         <Text>Go to detail</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={display}>
+      <TouchableOpacity onPress={display} style={styles.button}>
         <Text>Display</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={onHide}>
+      <TouchableOpacity onPress={onHide} style={styles.button}>
         <Text>Hide</Text>
       </TouchableOpacity>
     </View>
@@ -44,5 +47,8 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     marginVertical: 20,
+  },
+  button: {
+    marginVertical: 10,
   },
 });

@@ -112,6 +112,7 @@ export class CallKeepService {
           channelName: 'Incoming video call',
           notificationTitle: 'Linh Vo',
           notificationBody: 'Incoming video call',
+          // mainComponent: "MyReactNativeApp",
           payload: {
             kiokas: 'ádada',
             ssskis: 'awq',

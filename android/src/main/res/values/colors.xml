@@ -3,6 +3,6 @@
  <color name="primary_dark">#000000</color>
   <color name="colorAccent">#55237C</color>
   <color name="background">#141C2E</color>
-  <color name="notification_action_accept">#FF2525</color>
+  <color name="notification_action_accept">#12B76A</color>
   <color name="notification_action_decline">#FF2525</color>
 </resources>
