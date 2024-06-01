@@ -1,73 +1,43 @@
-**React Native Full Screen Notification Incoming Call For Android** This library works based on android display time-sensitive notifications
-For more information about **Display time-sensitive notifications** (https://developer.android.com/training/notify-user/time-sensitive).
+**This library enables full screen incoming call notifications on Android**  , leveraging Android's time-sensitive notifications. For more information, refer to the official (https://developer.android.com/training/notify-user/time-sensitive).
 
-⚠️ **This library only work for Android** .
+⚠️ **This library is only compatible with Android.** .
 
 # Screenshot
 
-<p align="center" >
+<p align="center">
   <kbd>
     <img
       src="https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/blob/master/docs/background.gif"
       title="Background Demo"
-      float="left"
-    width="350" height="700"
+      width="350" height="700"
     >
   </kbd>
   <kbd>
     <img
       src="https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/blob/master/docs/block.gif"
       title="Block Demo"
-      float="left"
-       width="350" height="700"
+      width="350" height="700"
     >
   </kbd>
-  <br>
 </p>
 
 # react-native-full-screen-notification-incoming-call
 
-Android full screen notification incoming call for React Native
+Provides full screen incoming call notifications for React Native applications on Android.
 
 ## Installation
 ## React Native Compatibility
-To use this library you need to ensure you match up with the correct version of React Native you are using.
+Ensure you are using the appropriate library version for your React Native version.
 
- | lib version                          | React Native Version |
+ | Library Version                         | React Native Version |
 | ------------------------------------- | ----------------------------- |
-| `react-native-full-screen-notification-incoming-call` `>= 0.1.8`   | `  >=  0.61.0`                  |
+| `react-native-full-screen-notification-incoming-call >= 0.1.8`   | `  >=  0.61.0`                  |
 | `react-native-full-screen-notification-incoming-call` `<= 0.1.7`  | ` < 0.61.0`                     |
 ```sh
 npm install react-native-full-screen-notification-incoming-call
 
 ```
 
-## Manual installation
-
-1. In `android/app/build.gradle`
-   Add a line `compile project(':react-native-full-screen-notification-incoming-call')` in `dependencies {}` section.
-
-2. In `android/settings.gradle`
-   Add:
-
-```java
-include ':react-native-full-screen-notification-incoming-call'
-project(':react-native-full-screen-notification-incoming-call').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-full-screen-notification-incoming-call/android')
-```
-
-3. In `android/app/src/main/java/.../MainApplication.java`:
-
-```java
-import com.reactnativefullscreennotificationincomingcall.FullScreenNotificationIncomingCallPackage; // Add this import line
-//...
-
-private static List<ReactPackage> getPackages() {
-    return Arrays.<ReactPackage>asList(
-        new MainReactPackage(),
-        new FullScreenNotificationIncomingCallModule() // Add this line
-    );
-}
-```
 
 ### Addition installation step
 
@@ -89,6 +59,7 @@ In `AndroidManifest.xml`:
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <application ....>
       <activity android:name="com.reactnativefullscreennotificationincomingcall.IncomingCallActivity"
         android:theme="@style/incomingCall"
@@ -110,6 +81,7 @@ In `AndroidManifest.xml`:
          android:name="com.reactnativefullscreennotificationincomingcall.IncomingCallService"
          android:enabled="true"
          android:stopWithTask="false"
+         android:foregroundServiceType="phoneCall"
          android:exported="true" />
 
      .....
@@ -122,9 +94,9 @@ In `AndroidManifest.xml`:
 import RNNotificationCall from 'react-native-full-screen-notification-incoming-call';
 ```
 
-#### display notification
+#### Display Notification
 
-````ts
+```ts
  function displayNotification(uid:string, avatar?:string, timeout?:number, foregroundOptions:foregroundOptionsModel):void
 //  uid: String required(Call UUID v4)
 // - avatar: String optional(Avatar URL)
@@ -142,10 +114,10 @@ type foregroundOptionsModel ={
   mainComponent?: string;//appKey (optional) to the custom incoming call screen. To understand the details you can check the [example](https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/blob/master/example/index.tsx)
   payload?:any//any Object (optional) pass whatever data you want to get when custom incomingcall screen or receive action/decline event
 }
+```
 
-```                                                         |
-
-```js
+Example:
+```ts
 //example
 RNNotificationCall.displayNotification(
   '22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad',
@@ -167,39 +139,40 @@ RNNotificationCall.displayNotification(
 );
 ````
 
-#### hide notification
+#### Hide Notification
 
-```ts
+````ts
 function hideNotification(): void;
-```
+````
+Example:
 
-```js
+````js
 //example
 RNNotificationCall.hideNotification();
-```
+````
 
-#### answer event
+#### Answer Event
 
-```ts
+````ts
 function addEventListener(eventName: 'answer',handler(payload:answerPayload): void): void;
 export interface answerPayload {
   callUUID: string; //call id
   payload?: string; // jsonString
 }
-```
-
-```js
+````
+Example:
+````js
 //example
 RNNotificationCall.addEventListener('answer', (data) => {
   RNNotificationCall.backToApp();
   const { callUUID, payload } = data;
   console.log('press answer', callUUID);
 });
-```
+````
 
-#### endCall event
+#### End Call Event
 
-```ts
+````ts
 function addEventListener(eventName: 'endCall',handler(payload:declinePayload): void): void;
 
 type declinePayload {
@@ -209,62 +182,62 @@ type declinePayload {
 }
  //ACTION_REJECTED_CALL => press button decline or call function declineCall
  //ACTION_HIDE_CALL => action name when notification auto hide by timeout
-```
-
-```js
+````
+Example:
+````js
 // Example
 RNNotificationCall.addEventListener('endCall', (data) => {
   const { callUUID, endAction, payload } = data;
   console.log('press endCall', callUUID);
 });
-```
+````
 
-#### remove event
+#### Remove Event
 
-```ts
+````ts
 function removeEventListener(eventName: 'answer' | 'endCall'): void;
-```
-
-```js
+````
+Example:
+````js
 // Example
 RNNotificationCall.removeEventListener('answer');
 RNNotificationCall.removeEventListener('endCall');
-```
+````
 
-#### back to app
+#### Back to App
 
-```ts
+````ts
 function backToApp(): void;
-```
-
-```js
+````
+Example:
+````js
 // Example
 RNNotificationCall.backToApp();
-```
+````
 
-#### decline call
+#### Decline Call
 
-```ts
+````ts
 function declineCall(uuid: string, payload?: string): void;
 // payload(optinal) : json string
-```
-
-```js
+````
+Example:
+````js
 // Example
 RNNotificationCall.declineCall(22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad, JSON.stringify({name:'Test',Body:'test'}));
-```
+````
 
-#### answer call
+#### Answer Call
 
-```ts
+````ts
 function answerCall(uuid: string, payload?: string): void;
 // payload(optinal) : json string
-```
-
-```js
+````
+Example:
+````js
 // Example
 RNNotificationCall.answerCall(22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad, JSON.stringify({name:'Test',Body:'test'}));
-```
+````
 
 #### Troubleshooting
 
@@ -275,8 +248,11 @@ RNNotificationCall.answerCall(22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad, JSON.stringi
 - On Android 13: Make sure enable notification permission relate https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/issues/42
 
 ## Contributing
+I love contributions! Check out my [contributing docs](CONTRIBUTING.md) to get more details into how to run this project, the examples, and more all locally.
 
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
+## Issues
+
+Have an issue with using the runtime, or want to suggest a feature/API to help make your development life better? Log an issue in our [issues](https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/issues) tab! You can also browse older issues and discussion threads there to see solutions that may have worked for common problems.
 
 ## License
 
