@@ -104,11 +104,11 @@ import RNNotificationCall from 'react-native-full-screen-notification-incoming-c
      * @param timeout - Timeout duration in milliseconds (optional)
      * @param foregroundOptions - Options for the foreground notification
      */
- function displayNotification(uid:string, avatar?:string, timeout?:number, foregroundOptions:foregroundOptionsModel):void
+ function displayNotification(uid:string, avatar?:string, timeout?:number, foregroundOptions:ForegroundOptionsModel):void
   /**
    * Options for the foreground notification
    */
-export interface foregroundOptionsModel {
+export interface ForegroundOptionsModel {
   /** Channel ID of the notification */
   channelId: string;
   /** Channel name of the notification */

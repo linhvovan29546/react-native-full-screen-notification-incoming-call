@@ -34,7 +34,9 @@ enum RNNotificationEvent {
 }
 enum CallAction {
   ACTION_END_CALL = 'ACTION_END_CALL',
+  /** Indicates the call was explicitly declined by the user, either by pressing the decline button or invoking the `declineCall` function. */
   ACTION_REJECTED_CALL = 'ACTION_REJECTED_CALL',
+  /** Indicates the notification was automatically hidden due to a timeout. */
   ACTION_HIDE_CALL = 'ACTION_HIDE_CALL',
   ACTION_SHOW_INCOMING_CALL = 'ACTION_SHOW_INCOMING_CALL',
   HIDE_NOTIFICATION_INCOMING_CALL = 'HIDE_NOTIFICATION_INCOMING_CALL',
@@ -45,7 +47,7 @@ enum CallAction {
 /**
  * Options for the foreground notification
  */
-export interface foregroundOptionsModel {
+export interface ForegroundOptionsModel {
   /** Channel ID of the notification */
   channelId: string;
   /** Channel name of the notification */
@@ -142,7 +144,7 @@ class RNNotificationCall {
     uuid: string,
     avatar: string | null,
     timeout: number | null,
-    foregroundOptions: foregroundOptionsModel
+    foregroundOptions: ForegroundOptionsModel
   ) => {
     if (!isAndroid) return;
     RNNotificationIncomingCall.displayNotification(
