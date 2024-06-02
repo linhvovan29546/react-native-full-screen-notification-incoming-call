@@ -97,7 +97,7 @@
         android:textSize="14sp"
         android:fontFamily="sans-serif"
         android:textColor="#ADADAD"
-        android:text="@string/decline"
+        android:text="@string/call_notification_decline_action"
         android:gravity="center"
         />
     </LinearLayout>
@@ -134,7 +134,7 @@
         android:textSize="14sp"
         android:fontFamily="sans-serif"
         android:textColor="#ADADAD"
-        android:text="@string/accept"
+        android:text="@string/call_notification_answer_action"
         android:gravity="center"
         />
     </LinearLayout>

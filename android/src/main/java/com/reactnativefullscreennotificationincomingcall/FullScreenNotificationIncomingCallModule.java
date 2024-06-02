@@ -26,103 +26,113 @@ import com.facebook.react.bridge.ReadableArray;
 
 @ReactModule(name = FullScreenNotificationIncomingCallModule.NAME)
 public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJavaModule {
-    public static final String NAME = "FullScreenNotificationIncomingCall";
-    private static final String TAG = "FullscreenModule";
-    public static ReactApplicationContext reactContext;
-    public FullScreenNotificationIncomingCallModule(ReactApplicationContext context) {
-        super(context);
-        reactContext = context;
+  public static final String NAME = "FullScreenNotificationIncomingCall";
+  private static final String TAG = "FullscreenModule";
+  public static ReactApplicationContext reactContext;
+
+  public FullScreenNotificationIncomingCallModule(ReactApplicationContext context) {
+    super(context);
+    reactContext = context;
+  }
+
+  @Override
+  @NonNull
+  public String getName() {
+    return NAME;
+  }
+
+  @ReactMethod
+  public void displayNotification(String uuid, @Nullable String avatar, @Nullable int timeout,
+      ReadableMap foregroundOptions) throws JSONException {
+    Log.d(TAG, "displayNotification ui");
+    if (foregroundOptions == null) {
+      Log.d(TAG, "foregroundOptions can't null");
+      return;
+    }
+    Intent intent = new Intent(getReactApplicationContext(), IncomingCallService.class);
+    intent.putExtra("uuid", uuid);
+    intent.putExtra("name", foregroundOptions.getString("notificationTitle"));
+    intent.putExtra("avatar", avatar);
+    intent.putExtra("info", foregroundOptions.getString("notificationBody"));
+    intent.putExtra("channelId", foregroundOptions.getString("channelId"));
+    intent.putExtra("channelName", foregroundOptions.getString("channelName"));
+    intent.putExtra("timeout", timeout);
+    intent.putExtra("icon", foregroundOptions.getString("notificationIcon"));
+    intent.putExtra("answerText", foregroundOptions.getString("answerText"));
+    intent.putExtra("declineText", foregroundOptions.getString("declineText"));
+    intent.putExtra("notificationColor", foregroundOptions.getString("notificationColor"));
+    intent.putExtra("notificationSound", foregroundOptions.getString("notificationSound"));
+    intent.putExtra("mainComponent", foregroundOptions.getString("mainComponent"));
+
+    Boolean isVideo;
+    if(foregroundOptions.hasKey("isVideo")){
+      isVideo=foregroundOptions.getBoolean("isVideo");
+      intent.putExtra("isVideo",isVideo);
     }
 
-    @Override
-    @NonNull
-    public String getName() {
-        return NAME;
+    if (foregroundOptions.hasKey("payload")) {
+      JSONObject payload = convertMapToJson(foregroundOptions.getMap("payload"));
+      intent.putExtra("payload", payload.toString());
     }
+    intent.setAction(Constants.ACTION_SHOW_INCOMING_CALL);
+    getReactApplicationContext().startService(intent);
+  }
 
-    @ReactMethod
-    public void displayNotification(String uuid, @Nullable String avatar,@Nullable int timeout, ReadableMap foregroundOptions) throws JSONException {
-      Log.d(TAG, "displayNotification ui"  );
-      if(foregroundOptions == null){
-        Log.d(TAG, "foregroundOptions can't null"  );
-        return;
-      }
-      Intent intent = new Intent(getReactApplicationContext(), IncomingCallService.class);
-      intent.putExtra("uuid", uuid);
-      intent.putExtra("name",foregroundOptions.getString("notificationTitle") );
-      intent.putExtra("avatar", avatar);
-      intent.putExtra("info", foregroundOptions.getString("notificationBody"));
-      intent.putExtra("channelId", foregroundOptions.getString("channelId"));
-      intent.putExtra("channelName", foregroundOptions.getString("channelName"));
-      intent.putExtra("timeout", timeout);
-      intent.putExtra("icon",foregroundOptions.getString("notificationIcon"));
-      intent.putExtra("answerText",foregroundOptions.getString("answerText"));
-      intent.putExtra("declineText",foregroundOptions.getString("declineText"));
-      intent.putExtra("notificationColor",foregroundOptions.getString("notificationColor"));
-      intent.putExtra("notificationSound",foregroundOptions.getString("notificationSound"));
-      intent.putExtra("mainComponent",foregroundOptions.getString("mainComponent"));
-     if(foregroundOptions.hasKey("payload")){
-       JSONObject payload= convertMapToJson(foregroundOptions.getMap("payload"));
-       intent.putExtra("payload",payload.toString());
-     }
-      intent.setAction(Constants.ACTION_SHOW_INCOMING_CALL);
-      getReactApplicationContext().startService(intent);
+  @ReactMethod
+  public void hideNotification() {
+    if (IncomingCallActivity.active) {
+      IncomingCallActivity.getInstance().destroyActivity(false);
     }
+    Intent intent = new Intent(getReactApplicationContext(), IncomingCallService.class);
+    intent.setAction(Constants.HIDE_NOTIFICATION_INCOMING_CALL);
+    getReactApplicationContext().stopService(intent);
+  }
 
-    @ReactMethod
-    public void hideNotification() {
-     if (IncomingCallActivity.active) {
-       IncomingCallActivity.getInstance().destroyActivity(false);
-     }
-       Intent intent = new Intent(getReactApplicationContext(), IncomingCallService.class);
-       intent.setAction(Constants.HIDE_NOTIFICATION_INCOMING_CALL);
-       getReactApplicationContext().stopService(intent);
+  @ReactMethod
+  public static void sendEventToJs(String eventName, @Nullable WritableMap params) {
+    reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
+  }
+
+  private Context getAppContext() {
+    return reactContext.getApplicationContext();
+  }
+
+  public Activity getCurrentReactActivity() {
+    return this.reactContext.getCurrentActivity();
+  }
+
+  @ReactMethod
+  public void backToApp() {
+    Context context = getAppContext();
+    if (context == null) {
+      return;
     }
-
-    @ReactMethod
-    public static void sendEventToJs(String eventName,@Nullable WritableMap params) {
-      reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
+    String packageName = context.getApplicationContext().getPackageName();
+    Intent focusIntent = context.getPackageManager().getLaunchIntentForPackage(packageName).cloneFilter();
+    Activity activity = getCurrentReactActivity();
+    boolean isOpened = activity != null;
+    if (!isOpened) {
+      focusIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK +
+          WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED +
+          WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD +
+          WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+      getReactApplicationContext().startActivity(focusIntent);
+    } else {
+      focusIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+      activity.startActivity(focusIntent);
     }
+  }
 
-    private Context getAppContext() {
-        return reactContext.getApplicationContext();
-    }
+  @ReactMethod
+  public void addListener(String eventName) {
+    // Keep: Required for RN built in Event Emitter Calls.
+  }
 
-    public Activity getCurrentReactActivity() {
-      return this.reactContext.getCurrentActivity();
-    }
+  @ReactMethod
+  public void removeListeners(Integer count) {
+    // Keep: Required for RN built in Event Emitter Calls.
+  }
 
-    @ReactMethod
-      public void backToApp() {
-        Context context = getAppContext();
-        if (context == null) {
-          return;
-        }
-        String packageName = context.getApplicationContext().getPackageName();
-        Intent focusIntent = context.getPackageManager().getLaunchIntentForPackage(packageName).cloneFilter();
-        Activity activity = getCurrentReactActivity();
-        boolean isOpened = activity != null;
-        if (!isOpened) {
-          focusIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK +
-            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED +
-            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD +
-            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-          getReactApplicationContext().startActivity(focusIntent);
-        }else{
-            focusIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            activity.startActivity(focusIntent);
-        }
-      }
-
-        @ReactMethod
-    public void addListener(String eventName) {
-      // Keep: Required for RN built in Event Emitter Calls.
-    }
-
-    @ReactMethod
-    public void removeListeners(Integer count) {
-      // Keep: Required for RN built in Event Emitter Calls.
-    }
   private static JSONObject convertMapToJson(ReadableMap readableMap) throws JSONException {
     JSONObject object = new JSONObject();
     ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
@@ -151,6 +161,7 @@ public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJa
     }
     return object;
   }
+
   private static JSONArray convertArrayToJson(ReadableArray readableArray) throws JSONException {
     JSONArray array = new JSONArray();
     for (int i = 0; i < readableArray.size(); i++) {

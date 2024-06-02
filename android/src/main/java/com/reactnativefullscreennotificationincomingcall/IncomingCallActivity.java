@@ -12,7 +12,9 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.airbnb.lottie.LottieAnimationView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -20,6 +22,7 @@ import com.facebook.react.ReactFragment;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.fullscreennotificationincomingcall.R;
 import com.squareup.picasso.Picasso;
 
 public class IncomingCallActivity extends AppCompatActivity implements DefaultHardwareBackBtnHandler {
@@ -43,10 +46,11 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
   public static IncomingCallActivity getInstance() {
     return instance;
   }
+
   @Override
   public void onStart() {
     super.onStart();
-    active=true;
+    active = true;
     instance = this;
   }
 
@@ -54,10 +58,11 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
   public void onStop() {
     super.onStop();
   }
+
   @Override
   public void onDestroy() {
     Log.d(TAG, "onDestroy: ");
-    if(active){
+    if (active) {
       dismissIncoming(Constants.ACTION_REJECTED_CALL);
     }
     super.onDestroy();
@@ -83,34 +88,36 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
         | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
         | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
     Bundle bundle = getIntent().getExtras();
-    if (bundle.containsKey("mainComponent") && bundle.getString("mainComponent")!=null) {
+    if (bundle.containsKey("uuid")) {
+      uuid = bundle.getString("uuid");
+    }
+    if (bundle.containsKey("mainComponent") && bundle.getString("mainComponent") != null) {
+      String mainComponent = bundle.getString("mainComponent");
       setContentView(R.layout.custom_ingcoming_call_rn);
-       Fragment reactNativeFragment = new ReactFragment.Builder()
-      .setComponentName(bundle.getString("mainComponent"))
-         .setLaunchOptions(bundle)
-      .build();
-    getSupportFragmentManager()
-      .beginTransaction()
-      .add(R.id.reactNativeFragment, reactNativeFragment)
-      .commit();
-      if (bundle.containsKey("uuid")) {
-        uuid = bundle.getString("uuid");
-      }
-    return;
-    }else{
+      Fragment reactNativeFragment = new ReactFragment.Builder()
+        .setComponentName(mainComponent)
+        .setLaunchOptions(bundle)
+        .setFabricEnabled(false)
+        .build();
+
+      getSupportFragmentManager()
+        .beginTransaction()
+        .add(R.id.reactNativeFragment, reactNativeFragment)
+        .commit();
+      return;
+    } else {
       setContentView(R.layout.activity_call_incoming);
     }
+//    Access views
     tvName = findViewById(R.id.tvName);
     tvInfo = findViewById(R.id.tvInfo);
     ivAvatar = findViewById(R.id.ivAvatar);
-    tvDecline=findViewById(R.id.tvDecline);
-    tvAccept=findViewById(R.id.tvAccept);
+    tvDecline = findViewById(R.id.tvDecline);
+    tvAccept = findViewById(R.id.tvAccept);
     lnDeclineCall = findViewById(R.id.lnDeclineCall);
     lnAcceptCall = findViewById(R.id.lnAcceptCall);
+
     if (bundle != null) {
-      if (bundle.containsKey("uuid")) {
-        uuid = bundle.getString("uuid");
-      }
       if (bundle.containsKey("name")) {
         String name = bundle.getString("name");
         tvName.setText(name);
@@ -125,29 +132,19 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
           Picasso.get().load(avatar).transform(new CircleTransform()).into(ivAvatar);
         }
       }
-      if(bundle.containsKey("declineText")){
+      if (bundle.containsKey("declineText")) {
         String declineText = bundle.getString("declineText");
         tvDecline.setText(declineText);
       }
-      if(bundle.containsKey("answerText")){
+      if (bundle.containsKey("answerText")) {
         String answerText = bundle.getString("answerText");
         tvAccept.setText(answerText);
       }
     }
 
-    lnAcceptCall.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-          acceptDialing();
-      }
-    });
+    lnAcceptCall.setOnClickListener(v -> acceptDialing());
 
-    lnDeclineCall.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        dismissDialing(Constants.ACTION_REJECTED_CALL);
-      }
-    });
+    lnDeclineCall.setOnClickListener(v -> dismissDialing(Constants.ACTION_REJECTED_CALL));
 
   }
 
@@ -159,8 +156,9 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
   public void dismissIncoming(String action) {
     dismissDialing(action);
   }
+
   public void destroyActivity(Boolean isReject) {
-    active=isReject;
+    active = isReject;
     if (android.os.Build.VERSION.SDK_INT >= 21) {
       finishAndRemoveTask();
     } else {
@@ -169,11 +167,11 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
   }
 
   private void acceptDialing() {
-    active=false;
+    active = false;
     WritableMap params = Arguments.createMap();
     Bundle bundle = getIntent().getExtras();
-    if(bundle.containsKey("payload")){
-      params.putString("payload",bundle.getString("payload"));
+    if (bundle.containsKey("payload")) {
+      params.putString("payload", bundle.getString("payload"));
     }
     params.putString("callUUID", uuid);
     FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationAnswerAction, params);
@@ -187,14 +185,14 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
   }
 
   private void dismissDialing(String action) {
-    active=false;
+    active = false;
     WritableMap params = Arguments.createMap();
     Bundle bundle = getIntent().getExtras();
-    if(bundle.containsKey("payload")){
-      params.putString("payload",bundle.getString("payload"));
+    if (bundle.containsKey("payload")) {
+      params.putString("payload", bundle.getString("payload"));
     }
     params.putString("callUUID", uuid);
-    params.putString("endAction",action);
+    params.putString("endAction", action);
     FullScreenNotificationIncomingCallModule.sendEventToJs(Constants.RNNotificationEndCallAction, params);
     stopService(new Intent(this, IncomingCallService.class));
     if (android.os.Build.VERSION.SDK_INT >= 21) {
