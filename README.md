@@ -1,7 +1,8 @@
 **This library enables full screen incoming call notifications on Android**  , leveraging Android's time-sensitive notifications. For more information, refer to the official (https://developer.android.com/training/notify-user/time-sensitive).
 
-⚠️ **This library is only compatible with Android.** .
+⚠️ **This library is only compatible with Android.** 
 
+Starting from Android 12, the incoming call notification UI will resemble the one depicted here: https://developer.android.com/develop/ui/views/notifications/call-style
 # Screenshot
 
 <p align="center">
