@@ -260,7 +260,9 @@ Example:
 // Example
 RNNotificationCall.answerCall(22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad, JSON.stringify({name:'Test',Body:'test'}));
 ````
-
+#### Todos
+- [] Update the example to be simpler.
+- [] Customize incoming call notification UI for Android versions below 12.
 #### Troubleshooting
 
 - Custom Android notification sound:
