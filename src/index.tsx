@@ -5,11 +5,12 @@ import {
   Platform,
 } from 'react-native';
 const isAndroid = Platform.OS === 'android';
-const LINKING_ERROR =
-  `The package 'react-native-full-screen-notification-incoming-call' doesn't seem to be linked. Make sure: \n\n` +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo Go\n';
+// Ensure the native module is correctly linked
+const LINKING_ERROR = `
+The package 'react-native-full-screen-notification-incoming-call' doesn't seem to be linked. Make sure:
+- You rebuilt the app after installing the package
+- You are not using Expo Go
+`;
 
 const RNNotificationIncomingCall =
   NativeModules.FullScreenNotificationIncomingCall
@@ -23,6 +24,7 @@ const RNNotificationIncomingCall =
         }
       );
 let eventEmitter: any;
+
 if (isAndroid) {
   eventEmitter = new NativeEventEmitter(RNNotificationIncomingCall);
 }
@@ -40,40 +42,101 @@ enum CallAction {
   ACTION_PRESS_DECLINE_CALL = 'ACTION_PRESS_DECLINE_CALL',
   ACTION_START_ACTIVITY = 'ACTION_START_ACTIVITY',
 }
-
+/**
+ * Options for the foreground notification
+ */
 export interface foregroundOptionsModel {
+  /** Channel ID of the notification */
   channelId: string;
+  /** Channel name of the notification */
   channelName: string;
+  /** Icon of the notification (mipmap) */
   notificationIcon: string; //mipmap
+  /** Title of the notification */
   notificationTitle: string;
+  /** Body of the notification */
   notificationBody: string;
+  /** Label for the answer button */
   answerText: string;
+  /** Label for the decline button */
   declineText: string;
+  /** Color of the notification (optional) */
   notificationColor?: string;
-  notificationSound?: string; //raw
+  /** Sound of the notification (raw, optional) */
+  notificationSound?: string;
+  /** Main component name for custom incoming call screen (optional) */
   mainComponent?: string;
+  /** Indicates if the call is a video call (default is false, optional) */
+  isVideo?: boolean;
+  /** Additional data (optional) */
   payload?: any; //more info
 }
-export interface customIncomingActivityProps {
+/**
+ * Properties for the custom incoming activity
+ */
+export interface CustomIncomingActivityProps {
+  /**
+   * Unique identifier for the call.
+   * This ID helps to distinguish between different call instances.
+   */
   avatar?: string;
+  /** Additional information (optional) */
   info?: string;
+  /** Unique identifier for the call */
   uuid: string;
+  /**
+   * Additional data related to the call (optional).
+   * This can be any JSON string containing extra information about the call.
+   */
   payload?: any;
 }
-export interface answerPayload {
+/**
+ * Payload for the answer event
+ */
+export interface AnswerPayload {
+  /**
+   * Unique identifier for the call.
+   * This ID helps to distinguish between different call instances.
+   */
   callUUID: string;
-  payload?: string; // jsonString
+  /**
+   * Additional data related to the call (optional).
+   * This can be any JSON string containing extra information about the call.
+   */
+  payload?: string;
 }
-export interface declinePayload {
+
+/**
+ * Payload for the decline event
+ */
+export interface DeclinePayload {
+  /**
+   * Unique identifier for the call.
+   * This ID helps to distinguish between different call instances.
+   */
   callUUID: string;
-  payload?: string; // jsonString
-  endAction: 'ACTION_REJECTED_CALL' | 'ACTION_HIDE_CALL'; //ACTION_REJECTED_CALL => press button decline or call function declineCall
+  /**
+   * Additional data related to the call (optional).
+   * This can be any JSON string containing extra information about the call.
+   */
+  payload?: string;
+  /**
+   * Action taken to end the call.
+   * - `ACTION_REJECTED_CALL`: Indicates the call was explicitly declined by the user, either by pressing the decline button or invoking the `declineCall` function.
+   * - `ACTION_HIDE_CALL`: Indicates the notification was automatically hidden due to a timeout.
+   */
+  endAction: 'ACTION_REJECTED_CALL' | 'ACTION_HIDE_CALL';
 }
 class RNNotificationCall {
-  private _notificationEventHandlers;
-  constructor() {
-    this._notificationEventHandlers = new Map();
-  }
+  private _notificationEventHandlers = new Map<string, any>();
+
+  /**
+   * Display an incoming call notification
+   * @param uuid - Unique identifier for the call
+   * @param avatar - URL of the avatar image (optional)
+   * @param timeout - Timeout duration in milliseconds (optional)
+   * @param foregroundOptions - Options for the foreground notification
+   */
 
   displayNotification = (
     uuid: string,
@@ -90,50 +153,55 @@ class RNNotificationCall {
     );
   };
 
+  /**
+   * Hide the incoming call notification
+   */
   hideNotification = () => {
     if (!isAndroid) return;
     RNNotificationIncomingCall.hideNotification();
   };
-
-  //function only work when open app from quit state
+  /**
+   * Bring the app to the foreground
+   */
   backToApp = () => {
     if (!isAndroid) return;
     RNNotificationIncomingCall.backToApp();
   };
 
-  addEventListener = (type: string, handler: any) => {
+  /**
+   * Add an event listener for notification actions
+   * @param type - The type of event ('answer' or 'endCall')
+   * @param handler - The event handler function
+   */
+  addEventListener = (
+    type: 'answer' | 'endCall',
+    handler: (payload: AnswerPayload | DeclinePayload) => void
+  ) => {
     if (!isAndroid) return;
-    let listener;
-    if (type === 'answer') {
-      listener = eventEmitter.addListener(
-        RNNotificationEvent.RNNotificationAnswerAction,
-        (eventPayload: answerPayload) => {
-          handler(eventPayload);
-        }
-      );
-    } else if (type === 'endCall') {
-      listener = eventEmitter.addListener(
-        RNNotificationEvent.RNNotificationEndCallAction,
-        (eventPayload: declinePayload) => {
-          handler(eventPayload);
-        }
-      );
-    } else {
-      return;
-    }
+    const eventMap = {
+      answer: RNNotificationEvent.RNNotificationAnswerAction,
+      endCall: RNNotificationEvent.RNNotificationEndCallAction,
+    };
+    const listener = eventEmitter.addListener(eventMap[type], handler);
     this._notificationEventHandlers.set(type, listener);
   };
 
-  removeEventListener = (type: any) => {
+  /**
+   * Remove an event listener for notification actions
+   * @param type - The type of event ('answer' or 'endCall')
+   */
+  removeEventListener = (type: 'answer' | 'endCall') => {
     if (!isAndroid) return;
     const listener = this._notificationEventHandlers.get(type);
-    if (!listener) {
-      return;
-    }
-
-    listener.remove();
+    listener?.remove();
     this._notificationEventHandlers.delete(type);
   };
+
+  /**
+   * Decline an incoming call
+   * @param uuid - Unique identifier for the call
+   * @param payload - Additional data (optional)
+   */
   declineCall = (uuid: string, payload?: string) => {
     this.hideNotification();
     const data = {
@@ -146,6 +214,12 @@ class RNNotificationCall {
       data
     );
   };
+
+  /**
+   * Answer an incoming call
+   * @param uuid - Unique identifier for the call
+   * @param payload - Additional data (optional)
+   */
   answerCall = (uuid: string, payload?: string) => {
     this.hideNotification();
     const data = { callUUID: uuid, payload };

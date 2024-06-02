@@ -97,22 +97,42 @@ import RNNotificationCall from 'react-native-full-screen-notification-incoming-c
 #### Display Notification
 
 ```ts
+  /**
+     * Display an incoming call notification
+     * @param uuid - Unique identifier for the call
+     * @param avatar - URL of the avatar image (optional)
+     * @param timeout - Timeout duration in milliseconds (optional)
+     * @param foregroundOptions - Options for the foreground notification
+     */
  function displayNotification(uid:string, avatar?:string, timeout?:number, foregroundOptions:foregroundOptionsModel):void
-//  uid: String required(Call UUID v4)
-// - avatar: String optional(Avatar URL)
-// - timeout: Number optional ex 20000(Timeout for end call after 20s)
-type foregroundOptionsModel ={
-  channelId: string; // string channel id of notification
-  channelName: string;// channel name of notification
-  notificationIcon: string;//mipmap channel icon of notification
-  notificationTitle: string;//tile of notification
-  notificationBody: string;//body of notification
-  answerText: string;// answer button label
-  declineText: string;//decline button label
-  notificationColor?: string;//color of notification
-  notificationSound?: string;//raw file sound of notification
-  mainComponent?: string;//appKey (optional) to the custom incoming call screen. To understand the details you can check the [example](https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/blob/master/example/index.tsx)
-  payload?:any//any Object (optional) pass whatever data you want to get when custom incomingcall screen or receive action/decline event
+  /**
+   * Options for the foreground notification
+   */
+export interface foregroundOptionsModel {
+  /** Channel ID of the notification */
+  channelId: string;
+  /** Channel name of the notification */
+  channelName: string;
+  /** Icon of the notification (mipmap) */
+  notificationIcon: string; //mipmap
+  /** Title of the notification */
+  notificationTitle: string;
+  /** Body of the notification */
+  notificationBody: string;
+  /** Label for the answer button */
+  answerText: string;
+  /** Label for the decline button */
+  declineText: string;
+  /** Color of the notification (optional) */
+  notificationColor?: string;
+  /** Sound of the notification (raw, optional) */
+  notificationSound?: string;
+  /** Main component name for custom incoming call screen (optional) */
+  mainComponent?: string;
+  /** Indicates if the call is a video call (default is false, optional) To understand the details you can check the [example](https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/blob/master/example/index.tsx)*/
+  isVideo?: boolean;
+  /** Additional data (optional) */
+  payload?: any; //more info
 }
 ```
 
@@ -132,6 +152,7 @@ RNNotificationCall.displayNotification(
     answerText: 'Answer',
     declineText: 'Decline',
     notificationColor: 'colorAccent',
+    isVideo:true,
     notificationSound: null, //raw
     //mainComponent:'MyReactNativeApp',//AppRegistry.registerComponent('MyReactNativeApp', () => CustomIncomingCall);
     // payload:{name:'Test',Body:'test'}
@@ -154,8 +175,8 @@ RNNotificationCall.hideNotification();
 #### Answer Event
 
 ````ts
-function addEventListener(eventName: 'answer',handler(payload:answerPayload): void): void;
-export interface answerPayload {
+function addEventListener(eventName: 'answer',handler(payload:AnswerPayload): void): void;
+export interface AnswerPayload {
   callUUID: string; //call id
   payload?: string; // jsonString
 }
@@ -173,9 +194,9 @@ RNNotificationCall.addEventListener('answer', (data) => {
 #### End Call Event
 
 ````ts
-function addEventListener(eventName: 'endCall',handler(payload:declinePayload): void): void;
+function addEventListener(eventName: 'endCall',handler(payload:DeclinePayload): void): void;
 
-type declinePayload {
+type DeclinePayload {
   callUUID: string;// call id
   payload?: string; // jsonString
   endAction: 'ACTION_REJECTED_CALL' | 'ACTION_HIDE_CALL';

@@ -63,6 +63,13 @@ public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJa
     intent.putExtra("notificationColor", foregroundOptions.getString("notificationColor"));
     intent.putExtra("notificationSound", foregroundOptions.getString("notificationSound"));
     intent.putExtra("mainComponent", foregroundOptions.getString("mainComponent"));
+
+    Boolean isVideo;
+    if(foregroundOptions.hasKey("isVideo")){
+      isVideo=foregroundOptions.getBoolean("isVideo");
+      intent.putExtra("isVideo",isVideo);
+    }
+
     if (foregroundOptions.hasKey("payload")) {
       JSONObject payload = convertMapToJson(foregroundOptions.getMap("payload"));
       intent.putExtra("payload", payload.toString());

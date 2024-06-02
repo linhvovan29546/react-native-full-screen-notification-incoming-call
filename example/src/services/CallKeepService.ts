@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 import RNNotificationCall, {
-  type answerPayload,
-  type declinePayload,
+  type AnswerPayload,
+  type DeclinePayload,
 } from '../../../src/index';
 import RNCallKeep from 'react-native-callkeep';
 import {
@@ -112,6 +112,7 @@ export class CallKeepService {
           channelName: 'Incoming video call',
           notificationTitle: 'Linh Vo',
           notificationBody: 'Incoming video call',
+          isVideo: true,
           // mainComponent: "MyReactNativeApp",
           payload: {
             kiokas: 'ádada',
@@ -120,20 +121,26 @@ export class CallKeepService {
         });
       });
       // Listen to headless action events
-      RNNotificationCall.addEventListener('endCall', (data: declinePayload) => {
-        const { callUUID } = data;
-        // End call action here
-        console.log('endCall', callUUID);
-        RNCallKeep.endCall(callUUID);
-      });
-      RNNotificationCall.addEventListener('answer', (data: answerPayload) => {
-        const { callUUID } = data;
-        //open app from quit state
-        RNNotificationCall.backToApp();
-        //call api answer
-        console.log('answer', callUUID);
-        RNCallKeep.answerIncomingCall(callUUID);
-      });
+      RNNotificationCall.addEventListener(
+        'endCall',
+        (data: DeclinePayload | AnswerPayload) => {
+          const { callUUID } = data;
+          // End call action here
+          console.log('endCall', callUUID);
+          RNCallKeep.endCall(callUUID);
+        }
+      );
+      RNNotificationCall.addEventListener(
+        'answer',
+        (data: AnswerPayload | DeclinePayload) => {
+          const { callUUID } = data;
+          //open app from quit state
+          RNNotificationCall.backToApp();
+          //call api answer
+          console.log('answer', callUUID);
+          RNCallKeep.answerIncomingCall(callUUID);
+        }
+      );
       // You can listener firebase message event here
     }
   }

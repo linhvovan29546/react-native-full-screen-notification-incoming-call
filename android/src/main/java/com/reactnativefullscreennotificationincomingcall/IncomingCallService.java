@@ -181,14 +181,15 @@ public class IncomingCallService extends Service {
     createNotificationChannel(context, channelId, bundle.getString("channelName"), soundUri);
 
     NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId);
-    buildNotificationBase(context, notificationBuilder, bundle, emptyPendingIntent, soundUri);
+    buildNotificationBase(notificationBuilder, bundle, emptyPendingIntent, soundUri);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      boolean isVideo=bundle.getBoolean("isVideo");
       Person caller = buildCaller(bundle, avatarBitmap);
       notificationBuilder.setStyle(NotificationCompat.CallStyle.forIncomingCall(caller,
           onButtonNotificationClick(0, Constants.ACTION_PRESS_DECLINE_CALL, Constants.RNNotificationEndCallAction),
           onButtonNotificationClick(1, Constants.ACTION_PRESS_ANSWER_CALL, Constants.RNNotificationAnswerAction)
-        ))
+        ).setIsVideo(isVideo))
         .addPerson(caller);
     } else {
       addActionButtons(context, notificationBuilder, bundle);
@@ -201,7 +202,7 @@ public class IncomingCallService extends Service {
     return notification;
   }
 
-  private void buildNotificationBase(Context context, NotificationCompat.Builder notificationBuilder, Bundle bundle, PendingIntent emptyPendingIntent, Uri soundUri) {
+  private void buildNotificationBase(NotificationCompat.Builder notificationBuilder, Bundle bundle, PendingIntent emptyPendingIntent, Uri soundUri) {
     notificationBuilder.setContentTitle(bundle.getString("name"))
       .setContentText(bundle.getString("info"))
       .setPriority(NotificationCompat.PRIORITY_MAX)
