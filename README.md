@@ -266,7 +266,7 @@ RNNotificationCall.answerCall(22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad, JSON.stringi
 #### Troubleshooting
 
 - Custom Android notification sound:
-  - Since Android Oreo / 8 the Notificationsound is coming from the Channel and can only be set the first time you add the channel via your channel.setSound(). If you want to change it later on you need to delete the channel and then re-add it to the system.
+  - Since Android Oreo / 8 the Notification sound is coming from the Channel and can only be set the first time you add the channel via your channel.setSound(). If you want to change it later on you need to delete the channel and then re-add it to the system.
   
 - Android target 31 or higher:  android.app.BackgroundServiceStartNotAllowedException: Not allowed to start service Intent (android.app.BackgroundServiceStartNotAllowedException: Not allowed to start service Intent) https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/issues/38
 - On Android 13: Make sure enable notification permission relate https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/issues/42
@@ -275,10 +275,10 @@ RNNotificationCall.answerCall(22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad, JSON.stringi
 I love contributions! Check out my [contributing docs](CONTRIBUTING.md) to get more details into how to run this project, the examples, and more all locally.
 
 ## How to send a pull-request
-To send a pull-request please follow these rules for naming the commit message. Based on the commit messages, increment the version from the lastest release.
+To send a pull-request please follow these rules for naming the commit message. Based on the commit messages, increment the version from the latest release.
 
 - If the string "`BREAKING CHANGE`" is found anywhere in any of the commit messages or descriptions the major version will be incremented.
-- If a commit message begins with the string "`feat`" then the minor version will be increased. b"feat: new API" and "feature: new API".
+- If a commit message begins with the string "`feat`" then the minor version will be increased. "feat: new API".
 - All other changes will increment the `patch version`.
 
 ## Please star this library and join me in contributing to its development
