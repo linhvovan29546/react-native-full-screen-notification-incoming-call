@@ -274,6 +274,14 @@ RNNotificationCall.answerCall(22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad, JSON.stringi
 ## Contributing
 I love contributions! Check out my [contributing docs](CONTRIBUTING.md) to get more details into how to run this project, the examples, and more all locally.
 
+## How to send a pull-request
+To send a pull-request please follow these rules for naming the commit message. Based on the commit messages, increment the version from the lastest release.
+
+- If the string "`BREAKING CHANGE`" is found anywhere in any of the commit messages or descriptions the major version will be incremented.
+- If a commit message begins with the string "`feat`" then the minor version will be increased. b"feat: new API" and "feature: new API".
+- All other changes will increment the `patch version`.
+
+## Please star this library and join me in contributing to its development
 ## Issues
 
 Have an issue with using the runtime, or want to suggest a feature/API to help make your development life better? Log an issue in our [issues](https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/issues) tab! You can also browse older issues and discussion threads there to see solutions that may have worked for common problems.
