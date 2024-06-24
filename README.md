@@ -55,6 +55,7 @@ In `AndroidManifest.xml`:
 
 ```java
 // ...
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -105,7 +106,8 @@ import RNNotificationCall from 'react-native-full-screen-notification-incoming-c
      * @param timeout - Timeout duration in milliseconds (optional)
      * @param foregroundOptions - Options for the foreground notification
      */
- function displayNotification(uid:string, avatar?:string, timeout?:number, foregroundOptions:ForegroundOptionsModel):void
+function displayNotification(uid:string, avatar?:string, timeout?:number, foregroundOptions:ForegroundOptionsModel):void
+
   /**
    * Options for the foreground notification
    */
