@@ -106,19 +106,23 @@ export class CallKeepService {
     if (isAndroid) {
       //event only on android
       RNCallKeep.addEventListener('showIncomingCallUi', ({ callUUID }) => {
-        RNNotificationCall.displayNotification(callUUID, null, 30000, {
-          ...answerOption,
-          channelId: 'com.abc.incomingcall',
-          channelName: 'Incoming video call',
-          notificationTitle: 'Linh Vo',
-          notificationBody: 'Incoming video call',
-          isVideo: true,
-          // mainComponent: "MyReactNativeApp",
-          payload: {
-            kiokas: 'ádada',
-            ssskis: 'awq',
-          },
-        });
+        RNNotificationCall.displayNotification(
+          callUUID,
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKet-b99huP_BtZT_HUqvsaSz32lhrcLtIDQ&s',
+          30000,
+          {
+            ...answerOption,
+            channelId: 'com.abc.incomingcall',
+            channelName: 'Incoming video call',
+            notificationTitle: 'Linh Vo',
+            notificationBody: 'Incoming video call',
+            isVideo: true,
+            // mainComponent: "MyReactNativeApp",
+            payload: {
+              extra: 'extra',
+            },
+          }
+        );
       });
       // Listen to headless action events
       RNNotificationCall.addEventListener(
