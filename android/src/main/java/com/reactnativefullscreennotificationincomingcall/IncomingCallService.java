@@ -119,10 +119,10 @@ public class IncomingCallService extends Service {
   }
 
   private void loadAvatarAndStartForeground(String avatarUrl, Intent intent) {
-    Picasso.get().load(avatarUrl).into(new Target() {
+    Picasso.get().load(avatarUrl).transform(new CircleTransform()).into(new Target() {
       @Override
       public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-        startForegroundWithNotification(intent, CircleTransform.transformStatic(bitmap));
+        startForegroundWithNotification(intent, CircleTransform.transformWithRecycle(bitmap,false));
       }
 
       @Override
