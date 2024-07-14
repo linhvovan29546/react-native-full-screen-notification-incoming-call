@@ -1,6 +1,6 @@
 {
   "name": "react-native-full-screen-notification-incoming-call",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Android full screen notification incoming call for React Native",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
