@@ -91,23 +91,9 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
     if (bundle.containsKey("uuid")) {
       uuid = bundle.getString("uuid");
     }
-    if (bundle.containsKey("mainComponent") && bundle.getString("mainComponent") != null) {
-      String mainComponent = bundle.getString("mainComponent");
-      setContentView(R.layout.custom_ingcoming_call_rn);
-      Fragment reactNativeFragment = new ReactFragment.Builder()
-        .setComponentName(mainComponent)
-        .setLaunchOptions(bundle)
-        .setFabricEnabled(false)
-        .build();
 
-      getSupportFragmentManager()
-        .beginTransaction()
-        .add(R.id.reactNativeFragment, reactNativeFragment)
-        .commit();
-      return;
-    } else {
-      setContentView(R.layout.activity_call_incoming);
-    }
+    setContentView(R.layout.activity_call_incoming);
+    
 //    Access views
     tvName = findViewById(R.id.tvName);
     tvInfo = findViewById(R.id.tvInfo);
