@@ -57,7 +57,7 @@ export interface ForegroundOptionsModel {
   /** Title of the notification */
   notificationTitle: string;
   /** Body of the notification */
-  notificationBody: string;
+  notificationBody?: string | null;
   /** Label for the answer button */
   answerText: string;
   /** Label for the decline button */
@@ -76,7 +76,7 @@ export interface ForegroundOptionsModel {
 /**
  * Properties for the custom incoming activity
  */
-export interface CustomIncomingActivityProps {
+export interface CustomIncomingActivityProps extends ForegroundOptionsModel {
   /**
    * Unique identifier for the call.
    * This ID helps to distinguish between different call instances.
@@ -86,6 +86,8 @@ export interface CustomIncomingActivityProps {
   info?: string;
   /** Unique identifier for the call */
   uuid: string;
+  /** Caller name */
+  name: string;
   /**
    * Additional data related to the call (optional).
    * This can be any JSON string containing extra information about the call.
