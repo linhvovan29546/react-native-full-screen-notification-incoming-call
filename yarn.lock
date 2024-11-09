@@ -2615,6 +2615,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/checkbox@npm:^0.5.17":
+  version: 0.5.17
+  resolution: "@react-native-community/checkbox@npm:0.5.17"
+  peerDependencies:
+    react: "*"
+    react-native: ">= 0.62"
+    react-native-windows: ">=0.62"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: 98cddff11b976a1f712bfc4d7de946d5e102108bedc016bbcb668b3917757dd5092b5b93f651f740508dd8437ba3a0ce5ca15cef3ebf7bcfc15a490b0b7d0d6b
+  languageName: node
+  linkType: hard
+
 "@react-native-community/cli-clean@npm:13.6.6":
   version: 13.6.6
   resolution: "@react-native-community/cli-clean@npm:13.6.6"
@@ -2803,6 +2817,16 @@ __metadata:
     react: ">=16.0"
     react-native: ">=0.57"
   checksum: 246bcd94a6a2cafc415c7a192fb5a76ef7cd9b648b47ea4b2366f06128376ab377dcff3fab676261050fd3a97324bde5d64802aa3e8d1580fe6c0e3b0138cefc
+  languageName: node
+  linkType: hard
+
+"@react-native-picker/picker@npm:^2.9.0":
+  version: 2.9.0
+  resolution: "@react-native-picker/picker@npm:2.9.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 3f88ecbad85f071861bbd16c0d4891dd5eff13d638e6ecfe68da279a07e0a31dfa7844ae329fe2a2144695456f1c96d1be38e10185475dd164f8e918d6d083a1
   languageName: node
   linkType: hard
 
@@ -3630,6 +3654,13 @@ __metadata:
   version: 1.0.0
   resolution: "add-stream@npm:1.0.0"
   checksum: 3e9e8b0b8f0170406d7c3a9a39bfbdf419ccccb0fd2a396338c0fda0a339af73bf738ad414fc520741de74517acf0dd92b4a36fd3298a47fd5371eee8f2c5a06
+  languageName: node
+  linkType: hard
+
+"add@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "add@npm:2.0.6"
+  checksum: e2d23d40494565dfed4acd65e478570c444db5ac6c053551ed429c39ea0f2c99d83df63e7befec936df601827d2254d06a2fb6f7dcfd2022e810b25eab818b8c
   languageName: node
   linkType: hard
 
@@ -11094,13 +11125,16 @@ __metadata:
     "@babel/core": ^7.20.0
     "@babel/preset-env": ^7.20.0
     "@babel/runtime": ^7.20.0
+    "@react-native-community/checkbox": ^0.5.17
     "@react-native-community/masked-view": ^0.1.11
+    "@react-native-picker/picker": ^2.9.0
     "@react-native/babel-preset": 0.74.83
     "@react-native/metro-config": 0.74.83
     "@react-native/typescript-config": 0.74.83
     "@react-navigation/native": ^5.8.0
     "@react-navigation/stack": ^5.10.0
     "@types/react": 18.3.1
+    add: ^2.0.6
     babel-plugin-module-resolver: ^5.0.0
     react: 18.2.0
     react-native: 0.74.1
@@ -11111,6 +11145,7 @@ __metadata:
     react-native-safe-area-context: ^4.4.1
     react-native-screens: 3.29.0
     uuid-random: ^1.3.2
+    yarn: ^1.22.22
   languageName: unknown
   linkType: soft
 
@@ -13752,6 +13787,16 @@ __metadata:
     y18n: ^5.0.5
     yargs-parser: ^21.1.1
   checksum: 73b572e863aa4a8cbef323dd911d79d193b772defd5a51aab0aca2d446655216f5002c42c5306033968193bdbf892a7a4c110b0d77954a7fdf563e653967b56a
+  languageName: node
+  linkType: hard
+
+"yarn@npm:^1.22.22":
+  version: 1.22.22
+  resolution: "yarn@npm:1.22.22"
+  bin:
+    yarn: bin/yarn.js
+    yarnpkg: bin/yarn.js
+  checksum: 59aeef5ccfd3347287f939448e6d3594f0a42f74025b9bdc2a277641c1d4070c07a38b6e7c35e695f77410b0269a5a43c78535786564f86f39c9f781e6efa311
   languageName: node
   linkType: hard
 

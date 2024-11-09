@@ -123,9 +123,9 @@ function displayNotification(uid:string, avatar?:string, timeout?:number, foregr
 | `channelName`        | `string`              | Channel name of the notification.                                             | Yes      |
 | `notificationIcon`   | `string`              | Icon of the notification (mipmap).                                            | Yes      |
 | `notificationTitle`  | `string`              | Title of the notification.                                                    | Yes      |
-| `notificationBody`   | `string`              | Body text of the notification.                                                | Yes      |
-| `answerText`         | `string`              | Label for the answer button.                                                  | Yes      |
-| `declineText`        | `string`              | Label for the decline button.                                                 | Yes      |
+| `notificationBody`   | `string`              | Body text of the notification. On Android 12 and above, if the notificationBody is empty, the incoming call notification will display the description from CallStyle instead of this property.                                          | No      |
+| `answerText`         | `string`              | Label for the answer button. On Android 12 and above, the incoming call notification displays the answerText from CallStyle instead of this property.                                             | Yes      |
+| `declineText`        | `string`              | Label for the decline button. On Android 12 and above, the incoming call notification displays the declineText from CallStyle instead of this property.                                              | Yes      |
 | `notificationColor`  | `string` (optional)   | Color of the notification.                                                    | No       |
 | `notificationSound`  | `string` (optional)   | Sound for the notification (raw).                                             | No       |
 | `mainComponent`      | `string` (optional)   | Main component name for a custom incoming call screen.                        | No       |

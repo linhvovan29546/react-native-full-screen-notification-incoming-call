@@ -4,6 +4,7 @@ import RNNotificationCall, {
   type DeclinePayload,
 } from '../../../src/index';
 import RNCallKeep from 'react-native-callkeep';
+import type { HandleType } from 'react-native-callkeep';
 import {
   check,
   PERMISSIONS,
@@ -15,7 +16,7 @@ const appName = 'Incoming-Test';
 const isAndroid = Platform.OS === 'android';
 const answerOption = {
   channelId: 'com.abc.incomingcall',
-  channelName: 'Incoming video call',
+  channelName: 'Incoming Call',
   notificationIcon: 'ic_launcher', //mipmap
   notificationTitle: 'Linh Vo',
   answerText: 'Answer',
@@ -28,6 +29,7 @@ const answerOption = {
 export class CallKeepService {
   private static _instance?: CallKeepService;
   static navigation: any;
+  private static otherInformation: any;
   constructor() {
     //setup callkeep
     // this.setupCallKeep();
@@ -105,25 +107,35 @@ export class CallKeepService {
     RNCallKeep.addEventListener('endCall', this.onCallKeepEndCallAction);
     if (isAndroid) {
       //event only on android
-      RNCallKeep.addEventListener('showIncomingCallUi', ({ callUUID }) => {
-        RNNotificationCall.displayNotification(
-          callUUID,
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKet-b99huP_BtZT_HUqvsaSz32lhrcLtIDQ&s',
-          30000,
-          {
-            ...answerOption,
-            channelId: 'com.abc.incomingcall',
-            channelName: 'Incoming video call',
-            notificationTitle: 'Linh Vo',
-            notificationBody: 'Incoming video call',
-            isVideo: true,
-            // mainComponent: "MyReactNativeApp",
-            payload: {
-              extra: 'extra',
-            },
-          }
-        );
-      });
+      RNCallKeep.addEventListener(
+        'showIncomingCallUi',
+        // @ts-ignore:next-line
+        ({ callUUID, name, hasVideo = 'false' }) => {
+          const isVideo = hasVideo === 'true';
+          RNNotificationCall.displayNotification(
+            callUUID,
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKet-b99huP_BtZT_HUqvsaSz32lhrcLtIDQ&s',
+            30000,
+            {
+              ...answerOption,
+              channelId:
+                CallKeepService.otherInformation?.channelId ||
+                'com.abc.incomingcall',
+              channelName: 'Incoming Call',
+              notificationTitle: name,
+              notificationBody: isVideo
+                ? 'Incoming video call'
+                : 'Incoming call',
+              isVideo: isVideo,
+              mainComponent: CallKeepService.otherInformation?.mainComponent,
+              notificationSound: CallKeepService.otherInformation?.ringtone,
+              payload: {
+                extra: 'extra',
+              },
+            }
+          );
+        }
+      );
       // Listen to headless action events
       RNNotificationCall.addEventListener(
         'endCall',
@@ -167,18 +179,37 @@ export class CallKeepService {
     //You need to call RNCallKeep.endCall(callUUID) to end call
   }
 
-  async displayCall(uuid: string) {
+  async displayCall(data: {
+    uuid: string;
+    handle: string;
+    localizedCallerName: string;
+    handleType: HandleType;
+    hasVideo: boolean;
+    callerImage?: string;
+    other?: any;
+  }) {
+    const {
+      uuid,
+      handle,
+      localizedCallerName,
+      handleType,
+      hasVideo,
+      callerImage,
+      other,
+    } = data;
     const granted = await check(PERMISSIONS.ANDROID.READ_PHONE_NUMBERS);
     //only display call when permission granted
     if (granted !== RESULTS.GRANTED) return;
-    console.log('display call', uuid);
+    CallKeepService.otherInformation = other;
     RNCallKeep.displayIncomingCall(
       uuid,
-      'Linh Vo',
-      'Linh Vo',
-      'number',
-      true,
-      undefined
+      handle,
+      localizedCallerName,
+      handleType,
+      hasVideo,
+      {
+        callerImage,
+      }
     );
   }
   endAllCall() {
