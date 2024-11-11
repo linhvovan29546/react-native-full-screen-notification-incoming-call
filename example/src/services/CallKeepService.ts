@@ -30,6 +30,7 @@ export class CallKeepService {
   private static _instance?: CallKeepService;
   static navigation: any;
   private static otherInformation: any;
+  private static payload: any;
   constructor() {
     //setup callkeep
     // this.setupCallKeep();
@@ -130,7 +131,7 @@ export class CallKeepService {
               mainComponent: CallKeepService.otherInformation?.mainComponent,
               notificationSound: CallKeepService.otherInformation?.ringtone,
               payload: {
-                extra: 'extra',
+                callerName: name,
               },
             }
           );
@@ -149,11 +150,11 @@ export class CallKeepService {
       RNNotificationCall.addEventListener(
         'answer',
         (data: AnswerPayload | DeclinePayload) => {
-          const { callUUID } = data;
+          const { callUUID, payload } = data;
+          CallKeepService.payload = JSON.parse(payload || '');
           //open app from quit state
           RNNotificationCall.backToApp();
           //call api answer
-          console.log('answer', callUUID);
           RNCallKeep.answerIncomingCall(callUUID);
         }
       );
@@ -170,7 +171,9 @@ export class CallKeepService {
     // called when the user answer the incoming call
     //navigate to another screen
     //some project need to rehandle with redux state or other state manager refer https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/issues/17#issuecomment-1318225574
-    CallKeepService.navigation.navigate('Detail');
+    CallKeepService.navigation.navigate('Detail', {
+      payload: CallKeepService.payload,
+    });
   }
   onCallKeepEndCallAction() {
     // const { callUUID } = answerData;
