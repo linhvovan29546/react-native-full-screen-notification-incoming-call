@@ -10,15 +10,13 @@ Starting from Android 12, the incoming call notification UI will resemble the on
 <p align="center">
   <kbd>
     <img
-      src="https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/blob/master/docs/background.gif"
-      title="Background Demo"
+      src="https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/blob/master/docs/screenshot-basic.gif"
       width="350" height="700"
     >
   </kbd>
   <kbd>
     <img
-      src="https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/blob/master/docs/block.gif"
-      title="Block Demo"
+      src="https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/blob/master/docs/screenshot-with-customize-ui.gif"
       width="350" height="700"
     >
   </kbd>
@@ -128,7 +126,7 @@ function displayNotification(uid:string, avatar?:string, timeout?:number, foregr
 | `declineText`        | `string`              | Label for the decline button. On Android 12 and above, the incoming call notification displays the declineText from CallStyle instead of this property.                                              | Yes      |
 | `notificationColor`  | `string` (optional)   | Color of the notification.                                                    | No       |
 | `notificationSound`  | `string` (optional)   | Sound for the notification (raw).                                             | No       |
-| `mainComponent`      | `string` (optional)   | Main component name for a custom incoming call screen.                        | No       |
+| `mainComponent`      | `string` (optional)   | Main component name for a custom incoming call screen. Register this component in the index.js file, as shown in [this example](https://github.com/linhvovan29546/react-native-full-screen-notification-incoming-call/blob/master/example/index.js#L6C1-L6C77)                       | No       |
 | `isVideo`            | `boolean` (optional)  | Indicates if the call is a video call (default is `false`).                   | No       |
 | `payload`            | `any` (optional)      | Additional data for the notification.                                         | No       |
 

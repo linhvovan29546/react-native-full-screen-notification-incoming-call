@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { CallKeepService } from '../services/CallKeepService';
 
@@ -7,6 +7,8 @@ export default function InCallScreen() {
   const navigation = useNavigation();
   const [isMuted, setIsMuted] = React.useState(false); // Mute state
   const [isOnHold, setIsOnHold] = React.useState(false); // Hold state
+  const route = useRoute<any>();
+  const { payload } = route.params;
 
   // Handle end call
   const handleEndCall = () => {
@@ -31,7 +33,9 @@ export default function InCallScreen() {
       <View style={styles.inCallContainer}>
         {/* Display the caller's info or call status */}
         <Text style={styles.callStatus}>In Call</Text>
-        <Text style={styles.callerInfo}>Caller: John Doe</Text>
+        <Text style={styles.callerInfo}>
+          Caller: {payload.callerName || 'Unknown'}
+        </Text>
 
         {/* Call Control Buttons */}
         <View style={styles.inCallButtons}>
