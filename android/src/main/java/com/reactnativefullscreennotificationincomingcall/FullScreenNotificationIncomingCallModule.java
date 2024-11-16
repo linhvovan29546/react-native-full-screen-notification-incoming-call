@@ -88,7 +88,6 @@ public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJa
     getReactApplicationContext().stopService(intent);
   }
 
-  @ReactMethod
   public static void sendEventToJs(String eventName, @Nullable WritableMap params) {
     reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
   }
