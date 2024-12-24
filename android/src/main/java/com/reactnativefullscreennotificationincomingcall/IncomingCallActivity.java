@@ -1,6 +1,5 @@
 package com.reactnativefullscreennotificationincomingcall;
 
-
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +21,7 @@ import com.facebook.react.ReactFragment;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
-import com.fullscreennotificationincomingcall.R;
+
 import com.squareup.picasso.Picasso;
 
 public class IncomingCallActivity extends AppCompatActivity implements DefaultHardwareBackBtnHandler {
