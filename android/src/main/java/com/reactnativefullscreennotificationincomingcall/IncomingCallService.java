@@ -35,7 +35,7 @@ import androidx.core.graphics.drawable.IconCompat;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-import com.fullscreennotificationincomingcall.R;
+
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 

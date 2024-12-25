@@ -38,7 +38,7 @@ def supportsNamespace() {
 
 android {
   if (supportsNamespace()) {
-    namespace "com.fullscreennotificationincomingcall"
+    namespace "com.reactnativefullscreennotificationincomingcall"
 
     sourceSets {
       main {
