@@ -65,6 +65,10 @@ In `AndroidManifest.xml`:
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <!--Android 14+-->
+    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
+
     <application ....>
       <activity android:name="com.reactnativefullscreennotificationincomingcall.IncomingCallActivity"
         android:theme="@style/incomingCall"
