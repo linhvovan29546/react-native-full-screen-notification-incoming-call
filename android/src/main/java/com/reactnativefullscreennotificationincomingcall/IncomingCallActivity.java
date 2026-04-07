@@ -15,9 +15,10 @@ import android.widget.TextView;
 import com.airbnb.lottie.LottieAnimationView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
+import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactFragment;
+import com.facebook.react.ReactNativeHost;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -93,10 +94,15 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
     if (bundle.containsKey("mainComponent") && bundle.getString("mainComponent") != null) {
       String mainComponent = bundle.getString("mainComponent");
       setContentView(R.layout.custom_ingcoming_call_rn);
-      Fragment reactNativeFragment = new ReactFragment.Builder()
-        .setComponentName(mainComponent)
-        .setLaunchOptions(bundle)
-        .build();
+
+      // Use setArguments() instead of Builder to fix RN 0.81+ ambiguous method error
+      // https://github.com/facebook/react-native/issues/54396
+      Bundle fragmentArgs = new Bundle();
+      fragmentArgs.putString("arg_component_name", mainComponent);
+      fragmentArgs.putBundle("arg_launch_options", bundle);
+      fragmentArgs.putBoolean("arg_fabric_enabled", isFabricEnabled());
+      ReactFragment reactNativeFragment = new ReactFragment();
+      reactNativeFragment.setArguments(fragmentArgs);
 
       getSupportFragmentManager()
         .beginTransaction()
@@ -197,6 +203,24 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
       finishAndRemoveTask();
     } else {
       finish();
+    }
+  }
+
+  /**
+   * Detects if the app is using Fabric (New Architecture).
+   * Uses reflection to avoid compile-time errors on older RN versions
+   * where getUseFabric() doesn't exist.
+   */
+  private boolean isFabricEnabled() {
+    try {
+      ReactApplication reactApplication = (ReactApplication) getApplication();
+      ReactNativeHost reactNativeHost = reactApplication.getReactNativeHost();
+      // Use reflection to call getUseFabric() - avoids compile error on older RN
+      java.lang.reflect.Method getUseFabricMethod = reactNativeHost.getClass().getMethod("getUseFabric");
+      return (Boolean) getUseFabricMethod.invoke(reactNativeHost);
+    } catch (Exception e) {
+      // Method doesn't exist or failed - assume old architecture
+      return false;
     }
   }
 
